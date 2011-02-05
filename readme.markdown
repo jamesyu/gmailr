@@ -1,7 +1,7 @@
 Gmailr: A Gmail Javascript API
 ==============================
 
-Gmailr is a javascript library that methods that let you interact and get data from the Gmail interface. It is meant to be injected into the Gmail DOM directly, usually through a browser plugin.
+Gmailr is a javascript library that lets you interact and get data from the Gmail interface. It is meant to be injected into the Gmail DOM directly, usually through a browser plugin.
 
 Note: this is not an official Gmail API, and is not affiliated with Google.
 
@@ -63,6 +63,7 @@ This method will observe to various actions that the user does in Gmail, and wil
 * 'spam'            - callback(count)
 * 'compose'         - no args
 * 'viewChanged'     - no args
+
 
     G.insertTop(el)
     
