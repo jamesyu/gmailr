@@ -51,6 +51,7 @@
         currentNumUnread: null,
         currentInboxCount: null,
         archived: [],
+        elements: {},
         
         /*
             This is the main initialization routine. It bootstraps Gmailr into the Gmail interface.
@@ -71,14 +72,14 @@
             // Here we do delayed loading until success. This is in the case
             // that our script loads after Gmail has already loaded.
             self.delayed_loader = setInterval(function() {
-                self.canvas = $(document.getElementById("canvas_frame").contentDocument);
-                self.body   = self.canvas.find('body').first();
+                self.elements.canvas = $(document.getElementById("canvas_frame").contentDocument);
+                self.elements.body   = self.elements.canvas.find('body').first();
                 
                 if(self.loaded) {
                     if(delayed_loader_count != 0)
                         dbg('Delayed loader success.');
                         
-                    self.canvas.bind("DOMSubtreeModified", function(e) {
+                    self.elements.canvas.bind("DOMSubtreeModified", function(e) {
                         self.detectDOMEvents(e);
                     });
                     clearInterval(self.delayed_loader);
@@ -86,7 +87,7 @@
                     dbg('Calling delayed loader...');
                     delayed_loader_count += 1;
                     // we search from the body node, since there's no event to attach to
-                    self.load(self.body, cb);
+                    self.bootstrap(self.elements.body, cb);
                 }
             }, 500);
         },
@@ -97,7 +98,7 @@
         
         insertTop: function(el) {
             if(!this.loaded) throw "Call to insertTop before Gmail has loaded";
-            this.body.prepend($(el));
+            this.elements.body.prepend($(el));
         },
         
         /*
@@ -107,7 +108,7 @@
         */
         
         $: function(selector) {
-            return this.body.find(selector);
+            return this.elements.body.find(selector);
         },
         
         /*
@@ -117,7 +118,7 @@
         insertCss: function(cssFile) {
             var css = $('<link rel="stylesheet" type="text/css">');
             css.attr('href', cssFile);
-            this.canvas.find('head').first().append(css);
+            this.elements.canvas.find('head').first().append(css);
         },
         
         /**
@@ -154,7 +155,7 @@
          */
         emailAddress: function() {
             if(!this.loaded) throw "Call to emailAddress before Gmail has loaded";
-            return this.canvas.find('#guser b').first().html();
+            return this.elements.canvas.find('#guser b').first().html();
         },
 
         /**
@@ -163,7 +164,7 @@
         currentView: function() {
             if(!this.loaded) throw "Call to currentView before Gmail has loaded";
             
-            if(this.canvas.find('h1.ha').length > 0) {
+            if(this.elements.canvas.find('h1.ha').length > 0) {
                 return 'conversation';
             } else {
                 return 'thread';
@@ -174,7 +175,14 @@
          * Private Methods
          */
          
-        load: function(el, cb) {
+         
+        /**
+         * This method attempts to bootstrap Gmailr into the Gmail interface.
+         * Basically, this amounts polling to make sure Gmail has fully loaded, 
+         * and then setting up some basic hooks.
+         */
+         
+        bootstrap: function(el, cb) {
             var self = this;
             if(el) {
                 var el = $(el);
@@ -339,7 +347,7 @@
         },
         
         mainListingEl: function() {
-            return this.canvas.find('.nH.Cp').first();
+            return this.elements.canvas.find('.nH.Cp').first();
         },
         
         mainListingEmpty: function() {
@@ -351,7 +359,7 @@
         },
         
         toolbarEl: function() {
-            return this.canvas.find('.A1.D.E').first();
+            return this.elements.canvas.find('.A1.D.E').first();
         },
         
         toolbarCount: function() {
@@ -469,7 +477,7 @@
                 }
             }*/
             
-            if(this.canvas.find('.ha').length > 0) {
+            if(this.elements.canvas.find('.ha').length > 0) {
                 if(!this.inConversationView) {
                     this.inConversationView = true;
                     this.executeObQueues('viewChanged', 'conversation');

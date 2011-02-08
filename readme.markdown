@@ -51,7 +51,12 @@ Everything should be wrapped in a call to init, like so:
     
 This bootstraps the Gmailr javascript API on top of Gmail, taking care of all the hairy loading issues.
 
-You can now use the core Gmailr methods:
+You can now use the core Gmailr methods and attributes:
+
+    G.elements.canvas
+    G.elements.body
+    
+The elements hash holds some interesting elements inside Gmail. Currently, there are only two: the canvas (which is the iframe that holds the Gmail UI) and the body inside the canvas.
 
     G.observe(type, callback)
 
@@ -64,6 +69,7 @@ This method will observe to various actions that the user does in Gmail, and wil
 * 'compose'         - no args
 * 'viewChanged'     - no args
 
+Currently, you won't get any information about the contents of the email messages.
 
     G.insertTop(el)
     
