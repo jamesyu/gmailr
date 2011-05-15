@@ -354,7 +354,7 @@
         },
         
         mainListingEl: function() {
-            return this.elements.canvas.find('.nH.Cp').first();
+            return this.elements.canvas.find('.Cp').first();
         },
         
         mainListingEmpty: function() {
