@@ -200,7 +200,7 @@
 //                  this.leftMenu = el.find('.no .nM .TK').first().closest('.nn');
 
                     // use the inbox link as an anchor
-                    var v = el.find('a[href$="#inbox"]');
+                    var v = el.find('a[href$="#inbox"][title^="Inbox"]');
                     if(v.length > 0) this.inboxLink = v.first();
 
                     var v = el.find('a[href$="#mbox"]');
