@@ -236,9 +236,9 @@
                     this.initialized = true;
                     var win = top.document.getElementById("js_frame").contentDocument.defaultView;
 
-                    win.XMLHttpRequest.prototype._Gmail_open = win.XMLHttpRequest.prototype.open;
+                    this._Gmail_open = win.XMLHttpRequest.prototype.open;
                     win.XMLHttpRequest.prototype.open = function (method, url, async, user, password) {
-                        var out = this._Gmail_open.apply(this, arguments);
+                        var out = self._Gmail_open.apply(this, arguments);
                         this.xhrParams = {
                             method: method.toString(),
                             url: url.toString()
@@ -246,9 +246,9 @@
                         return out;
                     };
 
-                    win.XMLHttpRequest.prototype._Gmail_send = win.XMLHttpRequest.prototype.send;
+                    this._Gmail_send = win.XMLHttpRequest.prototype.send;
                     win.XMLHttpRequest.prototype.send = function (body) {
-                        var out = this._Gmail_send.apply(this, arguments);
+                        var out = self._Gmail_send.apply(this, arguments);
                         if (this.xhrParams) {
                             this.xhrParams.body = body;
                             Gmailr.detectXHREvents(this.xhrParams);
@@ -310,6 +310,7 @@
             numUnreadChange: [],
             inboxCountChange: [],
             viewChanged: [],
+            viewThread: [],
             applyLabel: [],
             draft: [],
             unread: [],
@@ -395,142 +396,148 @@
             var self = this;
 
             try {
-                var m = /[?&]act=([^&]+)/.exec(params.url);
-                if(m && m[1]) {
-                    var action = decodeURIComponent(m[1]);
-                    var count = 1;
+                var urlParams = $.deparam(params.url);
+                var action = urlParams.act || urlParams.view;
+                var count = 1;
+                
+                var postParams = null;
 
-                    var urlParams = $.deparam(params.url);
-                    var postParams = null;
-
-                    dbg(urlParams);
-                    if(params.body.length > 0) {
-                        postParams = $.deparam(params.body);
-                        dbg(postParams);
-                        if(postParams['t'] instanceof Array)
-                            count = postParams['t'].length;
-
-                        if(postParams['ba']) {
-                            // The user has cleared more than a pageful, just give'em 50 points
-                            count = -1;
-                        }
-                    }
-
+                if(params.body.length > 0) {
+                    postParams = $.deparam(params.body);
+                    
                     if(postParams && postParams.t && !(postParams.t instanceof Array)) {
                       postParams.t = [ postParams.t ];
+                      count = postParams.t.length;
                     }
 
-                    switch(action) {
-                        case "rc_^i": // Archiving
-                            // only count if from inbox or query
-                            // TODO: could do better
-                            if(urlParams['search'] == 'inbox' || urlParams['search'] == 'query' || urlParams['search'] == 'cat' || urlParams['search'] == 'mbox') {
-                                if(postParams) {
-                                    // Get list of email hashes
-                                    var emailsArchived = [];
-                                    postParams.t.forEach(function(e) {
-                                        // Make sure user didn't already archive this email
-                                        if(self.archived.indexOf(e) == -1)
-                                            emailsArchived.push(e);
-                                    });
+                    if(postParams['ba']) {
+                        // The user has cleared more than a pageful, just give'em 50 points
+                        count = -1;
+                    }
+                }
 
-                                    this.archived = this.archived.concat(emailsArchived);
 
-                                    if(emailsArchived.length > 0) {
-                                        p("User archived " + emailsArchived.length + " emails.");
-                                        this.executeObQueues('archive', count);
-                                    }
 
-                                    delete emailsArchived;
+                switch(action) {
+                    case 'ad':
+                      // View thread
+                      p('User views a thred');
+                      this.executeObQueues('viewThread', urlParams.th);
+                      break;
+                    case 'cv':
+                      // View conversation
+                        dbg(urlParams);
+                        dbg(postParams);
+                      break;
+                    case "rc_^i": // Archiving
+                        // only count if from inbox or query
+                        // TODO: could do better
+                        if(urlParams['search'] == 'inbox' || urlParams['search'] == 'query' || urlParams['search'] == 'cat' || urlParams['search'] == 'mbox') {
+                            if(postParams) {
+                                // Get list of email hashes
+                                var emailsArchived = [];
+                                postParams.t.forEach(function(e) {
+                                    // Make sure user didn't already archive this email
+                                    if(self.archived.indexOf(e) == -1)
+                                        emailsArchived.push(e);
+                                });
+
+                                this.archived = this.archived.concat(emailsArchived);
+
+                                if(emailsArchived.length > 0) {
+                                    p("User archived " + emailsArchived.length + " emails.");
+                                    this.executeObQueues('archive', count);
                                 }
+
+                                delete emailsArchived;
                             }
-                            break;
-                        case "arl": //applying label
-                            var label = urlParams["acn"];
-                            this.executeObQueues('applyLabel', label, postParams.t);
-                            break;
-                        case "tr": // Deleting
-                            p("User deleted " + count + " emails.");
-                            this.executeObQueues('delete', count);
-                            break;
-                        case "sm": // Composing
-                            if(this.currentView() == 'conversation') {
-                                p("User replied to an email.");
-                                var details = {
-                                  inReplyTo: postParams.rm,
-                                  body: postParams.body || null,
-                                  subject: postParams.subject || null,
-                                  bcc: postParams.bcc || null,
-                                  to: postParams.to,
-                                  from: postParams.from,
-                                  isHTML: postParams.ishtml == '1',
-                                  cc: postParams.cc || null,
-                                  fromDraft: postParams.draft === "undefined" ? null : postParams.draft
-                                };
-                                this.executeObQueues('reply', details);
-                            } else {
-                                p("User composed an email.");
-                                var details = {
-                                  body: postParams.body || null,
-                                  subject: postParams.subject || null,
-                                  bcc: postParams.bcc || null,
-                                  to: postParams.to,
-                                  from: postParams.from,
-                                  isHTML: postParams.ishtml == '1',
-                                  cc: postParams.cc || null,
-                                  fromDraft: postParams.draft === "undefined" ? null : postParams.draft
-                                };
-                                this.executeObQueues('compose', details);
-                            }
-                            break;
-                        case "sp": // Spam
-                            p("User spammed " + count + " emails.");
-                            this.executeObQueues('spam', count);
-                            break;
-                        case "dr": // Some action with a draft
-                            p("User discarded? a draft.");
-                            this.executeObQueues('draft','discard');
-                            break;
-                        case "sd":
-                            p("User saved? a draft.");
+                        }
+                        break;
+                    case "arl": //applying label
+                        var label = urlParams["acn"];
+                        this.executeObQueues('applyLabel', label, postParams.t);
+                        break;
+                    case "tr": // Deleting
+                        p("User deleted " + count + " emails.");
+                        this.executeObQueues('delete', count);
+                        break;
+                    case "sm": // Composing
+                        if(this.currentView() == 'conversation') {
+                            p("User replied to an email.");
                             var details = {
-                              inReplyTo: postParams.rm === "undefined" ? null : postParams.rm,
+                              inReplyTo: postParams.rm,
                               body: postParams.body || null,
                               subject: postParams.subject || null,
                               bcc: postParams.bcc || null,
-                              to: postParams.to || null,
+                              to: postParams.to,
                               from: postParams.from,
                               isHTML: postParams.ishtml == '1',
-                              cc: postParams.cc || null
+                              cc: postParams.cc || null,
+                              fromDraft: postParams.draft === "undefined" ? null : postParams.draft
                             };
-                            this.executeObQueues('draft','save', details);
-                            break;
-                        case 'ur':
-                          p("User marked messages as unread.");
-                          this.executeObQueues('unread', postParams.t);
+                            this.executeObQueues('reply', details);
+                        } else {
+                            p("User composed an email.");
+                            var details = {
+                              body: postParams.body || null,
+                              subject: postParams.subject || null,
+                              bcc: postParams.bcc || null,
+                              to: postParams.to,
+                              from: postParams.from,
+                              isHTML: postParams.ishtml == '1',
+                              cc: postParams.cc || null,
+                              fromDraft: postParams.draft === "undefined" ? null : postParams.draft
+                            };
+                            this.executeObQueues('compose', details);
+                        }
+                        break;
+                    case "sp": // Spam
+                        p("User spammed " + count + " emails.");
+                        this.executeObQueues('spam', count);
+                        break;
+                    case "dr": // Some action with a draft
+                        p("User discarded? a draft.");
+                        this.executeObQueues('draft','discard');
+                        break;
+                    case "sd":
+                        p("User saved? a draft.");
+                        var details = {
+                          inReplyTo: postParams.rm === "undefined" ? null : postParams.rm,
+                          body: postParams.body || null,
+                          subject: postParams.subject || null,
+                          bcc: postParams.bcc || null,
+                          to: postParams.to || null,
+                          from: postParams.from,
+                          isHTML: postParams.ishtml == '1',
+                          cc: postParams.cc || null
+                        };
+                        this.executeObQueues('draft','save', details);
+                        break;
+                    case 'ur':
+                      p("User marked messages as unread.");
+                      this.executeObQueues('unread', postParams.t);
+                      break;
+                    case 'rd':
+                      p("User marked messages as read.");
+                      this.executeObQueues('read', postParams.t);
+                      break;
+                    case 'st':
+                      p("User starred messages.");
+                      var starType;
+                      switch(postParams.sslbl) {
+                        case '^ss_sy':
+                          starType = 'standard';
                           break;
-                        case 'rd':
-                          p("User marked messages as read.");
-                          this.executeObQueues('read', postParams.t);
+                        default:
+                          starType = 'unknown';
                           break;
-                        case 'st':
-                          p("User starred messages.");
-                          var starType;
-                          switch(postParams.sslbl) {
-                            case '^ss_sy':
-                              starType = 'standard';
-                              break;
-                            default:
-                              starType = 'unknown';
-                              break;
-                          }
-                          this.executeObQueues('star', postParams.t, starType);
-                          break;
-                        case 'xst':
-                          p("User unstarred messages.");
-                          this.executeObQueues('unstar', postParams.t);
-                          break;
-                    }
+                      }
+                      this.executeObQueues('star', postParams.t, starType);
+                      break;
+                    case 'xst':
+                      p("User unstarred messages.");
+                      this.executeObQueues('unstar', postParams.t);
+                      break;
                 }
             } catch(e) {
                 dbg("Error in detectXHREvents: " + e);
