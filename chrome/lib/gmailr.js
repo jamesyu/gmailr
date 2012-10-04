@@ -403,8 +403,10 @@
 
                     var urlParams = $.deparam(params.url);
 
+                    dbg(params);
                     if(params.body.length > 0) {
                         var postParams = $.deparam(params.body);
+                        dbg(postParams);
                         if(postParams['t'] instanceof Array)
                             count = postParams['t'].length;
 
