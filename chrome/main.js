@@ -34,6 +34,18 @@ Gmailr.init(function(G) {
         status('You replied to an email.');
     });
 
+    G.observe('draft', function(action) {
+        switch(action) {
+            case 'save':
+                status('You saved a draft');
+                break;
+            case 'discard':
+                status('You discarded a draft');
+                break;
+        }
+        
+    });
+
     G.observe('applyLabel', function(label,emails) {
        status("you applied label " + label + " to " + emails.length + " email(s)");
     });

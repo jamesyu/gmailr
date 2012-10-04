@@ -317,7 +317,8 @@
             numUnreadChange: [],
             inboxCountChange: [],
             viewChanged: [],
-            applyLabel: []
+            applyLabel: [],
+            draft: []
         },
         loaded: false,
 
@@ -402,10 +403,11 @@
                     var count = 1;
 
                     var urlParams = $.deparam(params.url);
+                    var postParams = [];
 
-                    dbg(params);
+                    dbg(urlParams);
                     if(params.body.length > 0) {
-                        var postParams = $.deparam(params.body);
+                        postParams = $.deparam(params.body);
                         dbg(postParams);
                         if(postParams['t'] instanceof Array)
                             count = postParams['t'].length;
@@ -463,6 +465,14 @@
                         case "sp": // Spam
                             p("User spammed " + count + " emails.");
                             this.executeObQueues('spam', count);
+                            break;
+                        case "dr": // Some action with a draft
+                            p("User discarded? a draft.");
+                            this.executeObQueues('draft','discard');
+                            break;
+                        case "sd":
+                            p("User saved? a draft.");
+                            this.executeObQueues('draft','save');
                             break;
                     }
                 }
