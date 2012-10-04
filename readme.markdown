@@ -79,10 +79,6 @@ Inserts a DOM element on the top of Gmail's interface.
     
 Provides a jQuery selector so you can select elements in the Gmail interface.
 
-    G.insertCss(path)
-
-Inserts a CSS file into the Gmail DOM.
-
     G.numUnread()
     
 Number of unread emails.
