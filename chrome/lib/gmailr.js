@@ -414,7 +414,7 @@
                         }
                     }
 
-                    if(postParams.t && !(postParams['t'] instanceof Array)) {
+                    if(postParams && postParams.t && !(postParams.t instanceof Array)) {
                       postParams.t = [ postParams.t ];
                     }
 
