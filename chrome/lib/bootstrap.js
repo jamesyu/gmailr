@@ -7,7 +7,7 @@ yepnope({
     test: top.document === document,
     yep: [
         chrome.extension.getURL("main.css"),
-        chrome.extension.getURL("lib/jquery.1.4.2.js"),
+        'https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js',
         chrome.extension.getURL("lib/jquery-bbq/jquery.ba-bbq.min.js"),
         chrome.extension.getURL("lib/gmailr.js"),
         chrome.extension.getURL("main.js")
