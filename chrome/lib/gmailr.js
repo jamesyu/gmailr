@@ -72,14 +72,14 @@
             // Here we do delayed loading until success. This is in the case
             // that our script loads after Gmail has already loaded.
             self.delayed_loader = setInterval(function() {
-                self.elements.canvas = $(document.getElementsByTagName('html')[0]);
-                self.elements.body   = self.elements.canvas.find('body').first();
+                self.elements.canvas = $("[style*='min-height: 100%;']");
+                self.elements.body   = self.elements.canvas.find('.nH').first();
 
                 if(self.loaded) {
                     if(delayed_loader_count != 0)
                         dbg('Delayed loader success.');
 
-                    self.elements.canvas.bind("DOMSubtreeModified", function(e) {
+                    self.elements.body.bind("DOMSubtreeModified", function(e) {
                         self.detectDOMEvents(e);
                     });
                     clearInterval(self.delayed_loader);
