@@ -111,16 +111,6 @@
             return this.elements.body.find(selector);
         },
 
-        /*
-            Inserts a CSS file into the Gmail DOM.
-        */
-
-        insertCss: function(cssFile) {
-            var css = $('<link rel="stylesheet" type="text/css">');
-            css.attr('href', cssFile);
-            this.elements.canvas.find('head').first().append(css);
-        },
-
         /**
          * Subscribe to a specific event in Gmail
          *   name                arguments passed to callback
