@@ -26,15 +26,17 @@ Gmailr.init(function(G) {
         status('You marked ' + c + ' emails as spam.');
     });
 
-    G.observe('compose', function() {
+    G.observe('compose', function(details) {
         status('You composed an email.');
+        console.log('details', details);
     });
 
-    G.observe('reply', function(c) {
+    G.observe('reply', function(details) {
         status('You replied to an email.');
+        console.log('details', details);
     });
 
-    G.observe('draft', function(action) {
+    G.observe('draft', function(action, details) {
         switch(action) {
             case 'save':
                 status('You saved a draft');
@@ -43,7 +45,7 @@ Gmailr.init(function(G) {
                 status('You discarded a draft');
                 break;
         }
-        
+        console.log('details', details);
     });
 
     G.observe('applyLabel', function(label,emails) {

@@ -394,7 +394,7 @@
                     var count = 1;
 
                     var urlParams = $.deparam(params.url);
-                    var postParams = [];
+                    var postParams = null;
 
                     dbg(urlParams);
                     if(params.body.length > 0) {
@@ -447,10 +447,31 @@
                         case "sm": // Composing
                             if(this.currentView() == 'conversation') {
                                 p("User replied to an email.");
-                                this.executeObQueues('reply', 1);
+                                var details = {
+                                  inReplyTo: postParams.rm,
+                                  body: postParams.body || null,
+                                  subject: postParams.subject || null,
+                                  bcc: postParams.bcc || null,
+                                  to: postParams.to,
+                                  from: postParams.from,
+                                  isHTML: postParams.ishtml == '1',
+                                  cc: postParams.cc || null,
+                                  fromDraft: postParams.draft === "undefined" ? null : postParams.draft
+                                };
+                                this.executeObQueues('reply', details);
                             } else {
                                 p("User composed an email.");
-                                this.executeObQueues('compose', 1);
+                                var details = {
+                                  body: postParams.body || null,
+                                  subject: postParams.subject || null,
+                                  bcc: postParams.bcc || null,
+                                  to: postParams.to,
+                                  from: postParams.from,
+                                  isHTML: postParams.ishtml == '1',
+                                  cc: postParams.cc || null,
+                                  fromDraft: postParams.draft === "undefined" ? null : postParams.draft
+                                };
+                                this.executeObQueues('compose', details);
                             }
                             break;
                         case "sp": // Spam
@@ -463,7 +484,17 @@
                             break;
                         case "sd":
                             p("User saved? a draft.");
-                            this.executeObQueues('draft','save');
+                            var details = {
+                              inReplyTo: postParams.rm === "undefined" ? null : postParams.rm,
+                              body: postParams.body || null,
+                              subject: postParams.subject || null,
+                              bcc: postParams.bcc || null,
+                              to: postParams.to || null,
+                              from: postParams.from,
+                              isHTML: postParams.ishtml == '1',
+                              cc: postParams.cc || null
+                            };
+                            this.executeObQueues('draft','save', details);
                             break;
                     }
                 }
