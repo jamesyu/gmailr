@@ -46,7 +46,6 @@
          */
 
         debug: false,
-        inboxLink: null,
         priorityInboxLink: null,
         currentNumUnread: null,
         currentInboxCount: null,
@@ -87,7 +86,7 @@
                     dbg('Calling delayed loader...');
                     delayed_loader_count += 1;
                     // we search from the body node, since there's no event to attach to
-                    self.bootstrap(self.elements.body, cb);
+                    self.bootstrap(cb);
                 }
             }, 500);
         },
@@ -136,7 +135,7 @@
             // no matter where you are in Gmail
 
             //var title = this.inboxLink[0].title;
-            var title = this.inboxLink[0].title;
+            var title = this.getInboxLink()[0].title;
             var m = /\((\d+)\)/.exec(title);
             return (m && m[1]) ? parseInt(m[1]) : 0;
         },
@@ -181,24 +180,21 @@
          * and then setting up some basic hooks.
          */
 
-        bootstrap: function(el, cb) {
-            var self = this;
-            if(el) {
-                var el = $(el);
+        bootstrap: function(cb) {
+            if(this.elements.body) {
+                var el = $(this.elements.body);
 
                 // get handle on the left menu
                 if(!this.leftMenu || this.leftMenu.length == 0) {
 //                  this.leftMenu = el.find('.no .nM .TK').first().closest('.nn');
-
-                    // use the inbox link as an anchor
-                    var v = el.find('a[href$="#inbox"][title^="Inbox"]');
-                    if(v.length > 0) this.inboxLink = v.first();
+                    
+                    inboxLink = this.getInboxLink()
 
                     var v = el.find('a[href$="#mbox"]');
                     if(v.length > 0) this.priorityInboxLink = v.first();
 
-                    if(this.inboxLink) {
-                        this.leftMenu = this.inboxLink.closest('.TO').closest('div');
+                    if(inboxLink) {
+                        this.leftMenu = inboxLink.closest('.TO').closest('div');
                     } else if(this.priorityInboxLink) {
                         this.leftMenu = this.priorityInboxLink.closest('.TO').closest('div');
                     }
@@ -216,11 +212,17 @@
 
                         this.xhrWatcher.init();
 
-                        if(cb) cb(self);
+                        if(cb) cb(this);
                     }
 
                 }
             }
+        },
+
+        getInboxLink: function() {
+          // use the inbox link as an anchor
+          var v = $(this.elements.body).find('a[href$="#inbox"][title^="Inbox"]');
+          return v.first() || null;
         },
 
         xhrWatcher: {
@@ -329,7 +331,8 @@
         },
 
         currentTabHighlighted: function() {
-            if(this.inboxLink && this.inboxLink.closest('.TO').hasClass('nZ')) {
+            var inboxLink = this.getInboxLink()
+            if(inboxLink && inboxLink.closest('.TO').hasClass('nZ')) {
                 return 'inbox';
             } else if(this.priorityInboxLink && this.priorityInboxLink.closest('.TO').hasClass('nZ')) {
                 return 'priority_inbox';
