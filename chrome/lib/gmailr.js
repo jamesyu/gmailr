@@ -529,15 +529,20 @@
                 this.currentLeftMenuItem = s;
                 this.executeObQueues('tabChange', s);
             }
+            */
 
+            /*
             // Unread change
-            var l = this.inboxLink ? this.inboxLink : this.priorityInboxLink;
+            var l = this.getInboxLink() || this.priorityInboxLink;
             if((el[0] == l[0]) || isDescendant(el, l)) {
-                if(this.currentNumUnread != this.numUnread()) {
-                    this.executeObQueues('numUnreadChange', this.numUnread(), this.currentNumUnread);
-                    this.currentNumUnread = this.numUnread();
+                var newCount = this.numUnread();
+                if(this.currentNumUnread != newCount) {
+                    this.executeObQueues('numUnreadChange', newCount, this.currentNumUnread);
+                    this.currentNumUnread = newCount;
                 }
-            }*/
+            }
+            */
+            
 
             if(this.elements.canvas.find('.ha').length > 0) {
                 if(!this.inConversationView) {

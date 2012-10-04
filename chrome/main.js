@@ -61,4 +61,9 @@ Gmailr.init(function(G) {
     G.observe('applyLabel', function(label,emails) {
        status("you applied label " + label + " to " + emails.length + " email(s)");
     });
+
+    G.observe('numUnreadChange', function(newCount, oldCount) {
+        status('The unread count changed from '+oldCount+' to '+newCount);
+    });
+    
 });
