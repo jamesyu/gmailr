@@ -8,7 +8,7 @@ yepnope({
     yep: [
         chrome.extension.getURL("main.css"),
         chrome.extension.getURL("lib/jquery.1.4.2.js"),
-        chrome.extension.getURL("lib/jquery.ba-bbq.js"),
+        chrome.extension.getURL("lib/jquery-bbq/jquery.ba-bbq.min.js"),
         chrome.extension.getURL("lib/gmailr.js"),
         chrome.extension.getURL("main.js")
     ]

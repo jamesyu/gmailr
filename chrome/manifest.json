@@ -23,7 +23,7 @@
     "lib/gmailr.js",
     "lib/init.js",
     "lib/jquery.1.4.2.js",
-    "lib/jquery.ba-bbq.js",
+    "lib/jquery-bbq/jquery.ba-bbq.min.js",
     "main.css",
     "main.js"
   ]
