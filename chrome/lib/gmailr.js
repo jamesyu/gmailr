@@ -410,7 +410,7 @@
 
                         if(postParams['ba']) {
                             // The user has cleared more than a pageful, just give'em 50 points
-                            count = 50;
+                            count = -1;
                         }
                     }
                     switch(action) {
