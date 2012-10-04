@@ -37,12 +37,12 @@ Gmailr.init(function(G) {
     });
 
     G.observe('read', function(emails) {
-        status('You marked '+emails.length+' as read.');
+        status('You marked '+emails.length+' email as read.');
         console.log('emails', emails);
     });
 
     G.observe('unread', function(emails) {
-        status('You marked '+emails.length+' as unread.');
+        status('You marked '+emails.length+' email as unread.');
         console.log('emails', emails);
     });
 
