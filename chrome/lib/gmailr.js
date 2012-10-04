@@ -147,13 +147,14 @@
         emailAddress: function() {
             if(!this.loaded) throw "Call to emailAddress before Gmail has loaded";
 
-            // First, try old Gmail header
-            var el = this.elements.canvas.find('#guser b');
-            if(el.length > 0) return el.first().html();
-
-            // Try the new one
-            var el = this.elements.canvas.find('.gbmp1');
-            if(el.length > 0) return el.first().html();
+            var selectors = [
+              '#guser b', // First, try old Gmail header
+              '.gbmp1', // Try the new one
+              '#gbi4t' // Google+ (as of 2012-10-05)
+            ];
+            
+            var el = this.elements.canvas.find(selectors.join(','));
+            return el.first().html();
         },
 
         /**
