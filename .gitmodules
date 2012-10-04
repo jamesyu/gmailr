@@ -1,0 +1,3 @@
+[submodule "chrome/lib/yepnope.js"]
+	path = chrome/lib/yepnope.js
+	url = git://github.com/SlexAxton/yepnope.js.git

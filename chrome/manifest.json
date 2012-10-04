@@ -4,17 +4,29 @@
   "description": "An extension to test the features of Gmailr.",
   "content_scripts": [
     {
-      "matches": ["https://mail.google.com/*", "http://mail.google.com/*"],
-      "js": ["lib/bootstrap.js"],
+      "matches": [
+        "*://mail.google.com/*"
+      ],
+      "js": [
+        "lib/yepnope.js/yepnope.1.5.4-min.js",
+        "lib/bootstrap.js"
+      ],
       "run_at": "document_end"
     }
   ],
   "permissions": [
     "tabs",
-    "http://mail.google.com/*",
-    "https://mail.google.com/",
-    "http://*/"
+    "*://mail.google.com/*"
   ],
   "manifest_version" : 2,
-  "web_accessible_resources" : [ "lib/bootstrap.js", "lib/gmailr.js", "lib/init.js", "lib/jquery.1.4.2.js", "lib/jquery.ba-bbq.js", "lib/lab.js", "main.css", "main.js"]
+  "web_accessible_resources" : [
+    "lib/gmailr.js",
+    "lib/init.js",
+    "lib/jquery.1.4.2.js",
+    "lib/jquery.ba-bbq.js",
+    "main.css",
+    "main.js"
+  ]
 }
+
+        
