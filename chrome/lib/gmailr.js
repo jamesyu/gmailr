@@ -313,7 +313,9 @@
             applyLabel: [],
             draft: [],
             unread: [],
-            read: []
+            read: [],
+            star: [],
+            unstar: []
         },
         loaded: false,
 
@@ -505,12 +507,29 @@
                             break;
                         case 'ur':
                           p("User marked messages as unread.");
-                          this.executeObQueues('unread', postParams.t)
+                          this.executeObQueues('unread', postParams.t);
                           break;
                         case 'rd':
                           p("User marked messages as read.");
-                          this.executeObQueues('read', postParams.t)
-                          break; 
+                          this.executeObQueues('read', postParams.t);
+                          break;
+                        case 'st':
+                          p("User starred messages.");
+                          var starType;
+                          switch(postParams.sslbl) {
+                            case '^ss_sy':
+                              starType = 'standard';
+                              break;
+                            default:
+                              starType = 'unknown';
+                              break;
+                          }
+                          this.executeObQueues('star', postParams.t, starType);
+                          break;
+                        case 'xst':
+                          p("User unstarred messages.");
+                          this.executeObQueues('unstar', postParams.t);
+                          break;
                     }
                 }
             } catch(e) {

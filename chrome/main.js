@@ -46,6 +46,16 @@ Gmailr.init(function(G) {
         console.log('emails', emails);
     });
 
+    G.observe('star', function(emails) {
+        status('You starred '+emails.length+' emails.');
+        console.log('emails', emails);
+    });
+
+    G.observe('unstar', function(emails) {
+        status('You unstarred '+emails.length+' emails.');
+        console.log('emails', emails);
+    });
+
     G.observe('draft', function(action, details) {
         switch(action) {
             case 'save':
