@@ -36,6 +36,16 @@ Gmailr.init(function(G) {
         console.log('details', details);
     });
 
+    G.observe('read', function(emails) {
+        status('You marked '+emails.length+' as read.');
+        console.log('emails', emails);
+    });
+
+    G.observe('unread', function(emails) {
+        status('You marked '+emails.length+' as unread.');
+        console.log('emails', emails);
+    });
+
     G.observe('draft', function(action, details) {
         switch(action) {
             case 'save':

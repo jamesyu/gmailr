@@ -311,7 +311,9 @@
             inboxCountChange: [],
             viewChanged: [],
             applyLabel: [],
-            draft: []
+            draft: [],
+            unread: [],
+            read: []
         },
         loaded: false,
 
@@ -411,6 +413,11 @@
                             count = -1;
                         }
                     }
+
+                    if(postParams.t && !(postParams['t'] instanceof Array)) {
+                      postParams.t = [ postParams.t ];
+                    }
+
                     switch(action) {
                         case "rc_^i": // Archiving
                             // only count if from inbox or query
@@ -418,9 +425,8 @@
                             if(urlParams['search'] == 'inbox' || urlParams['search'] == 'query' || urlParams['search'] == 'cat' || urlParams['search'] == 'mbox') {
                                 if(postParams) {
                                     // Get list of email hashes
-                                    var emails = postParams['t'] instanceof Array ? postParams['t'] : [ postParams['t'] ];
                                     var emailsArchived = [];
-                                    emails.forEach(function(e) {
+                                    postParams.t.forEach(function(e) {
                                         // Make sure user didn't already archive this email
                                         if(self.archived.indexOf(e) == -1)
                                             emailsArchived.push(e);
@@ -433,15 +439,13 @@
                                         this.executeObQueues('archive', count);
                                     }
 
-                                    delete emails;
                                     delete emailsArchived;
                                 }
                             }
                             break;
                         case "arl": //applying label
                             var label = urlParams["acn"];
-                            var emails = postParams['t'] instanceof Array ? postParams['t'] : [ postParams['t'] ];
-                            this.executeObQueues('applyLabel', label, emails);
+                            this.executeObQueues('applyLabel', label, postParams.t);
                             break;
                         case "tr": // Deleting
                             p("User deleted " + count + " emails.");
@@ -499,6 +503,14 @@
                             };
                             this.executeObQueues('draft','save', details);
                             break;
+                        case 'ur':
+                          p("User marked messages as unread.");
+                          this.executeObQueues('unread', postParams.t)
+                          break;
+                        case 'rd':
+                          p("User marked messages as read.");
+                          this.executeObQueues('read', postParams.t)
+                          break; 
                     }
                 }
             } catch(e) {
