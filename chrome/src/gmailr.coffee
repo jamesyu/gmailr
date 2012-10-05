@@ -217,9 +217,9 @@ Copyright 2012, James Yu, Joscha Feth
       # no matter where you are in Gmail
       
       #var title = this.inboxLink[0].title;
-      title = @getInboxLink()[0].title
-      m = /\((\d+)\)/.exec(title)
-      parseInt(m?[1]? ? 0)
+      title = @getInboxLink().attr 'title'
+      m = /\((\d+)\)/.exec title
+      if m?[1] then parseInt m[1] else 0
 
     
     ###
