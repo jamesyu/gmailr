@@ -71,6 +71,7 @@ Copyright 2012, James Yu, Joscha Feth
     
     debug:                false
     priorityInboxLink:    null
+    inboxLink:            null
     currentNumUnread:     null
     currentInboxCount:    null
     elements:             {}
@@ -126,9 +127,9 @@ Copyright 2012, James Yu, Joscha Feth
         if @loaded
           clearInterval @delayedLoader
           dbg "Delayed loader success."
-          @elements.body.bind 'DOMSubtreeModified', @detectDOMEvents
+          @elements.body.children().on 'DOMSubtreeModified', @detectDOMEvents
         else
-          dbg "Calling delayed loader..."      
+          dbg "Calling delayed loader..."
           # we search from the body node, since there's no event to attach to
           @bootstrap cb
         return
@@ -243,8 +244,7 @@ Copyright 2012, James Yu, Joscha Feth
 
     getInboxLink: ->
       # use the inbox link as an anchor
-      v = $(@elements.body).find "a[href$='#inbox'][title^='Inbox']"
-      v.first() or null
+      @elements.body.find("a[href$='#inbox'][title^='Inbox']").first() or null
 
     liveLeftMenuItem: ->
       return null  unless @loaded
@@ -411,15 +411,18 @@ Copyright 2012, James Yu, Joscha Feth
       return
 
     detectDOMEvents: (e) =>
+      # don't bubble
+      e.stopPropagation()
+
       # dbg "DOM changed", e.target
       for ignored in @ignoreDOMElements
         # check all the ignored DOM elements
         if $.contains ignored, e.target
           # the target from where the change came is a descendant of an ignored element
           # dbg "...but the event came from a descendant of an ignored element"
-          return
+          return false
       
-      el = $(e.target)
+      el = $ e.target
 
       # Left Menu Changes
       #var s = this.liveLeftMenuItem();
@@ -427,19 +430,13 @@ Copyright 2012, James Yu, Joscha Feth
       #                this.currentLeftMenuItem = s;
       #                this.notify('tabChange', s);
       #            }
-      #            
-      
-      #
-      #            // Unread change
-      #            var l = this.getInboxLink() || this.priorityInboxLink;
-      #            if((el[0] == l[0]) || isDescendant(el, l)) {
-      #                var newCount = this.numUnread();
-      #                if(this.currentNumUnread != newCount) {
-      #                    this.notify(@EVENT_UNREAD_CHANGE, newCount, this.currentNumUnread);
-      #                    this.currentNumUnread = newCount;
-      #                }
-      #            }
-      #            
+
+      newCount = @numUnread()
+      if @currentNumUnread isnt newCount
+          dbg "Unread count changed"
+          @notify @EVENT_UNREAD_CHANGE, newCount, @currentNumUnread
+          @currentNumUnread = newCount
+         
       if @elements.canvas.find(".ha").length > 0
         unless @inConversationView
           @inConversationView = true
@@ -456,7 +453,6 @@ Copyright 2012, James Yu, Joscha Feth
           if (@currentInboxCount is null) or (toolbarCount isnt @currentInboxCount)
             @notify @EVENT_INBOX_COUNT_CHANGE, toolbarCount, @currentInboxCount  if @currentInboxCount isnt null
             @currentInboxCount = toolbarCount
-
 
   Gmailr = new Gmailr
 
