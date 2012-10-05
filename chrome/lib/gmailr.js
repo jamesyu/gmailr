@@ -77,7 +77,7 @@
 
                 if(self.loaded) {
                     if(delayed_loader_count != 0)
-                        dbg('Delayed loader success.');
+                        dbg('Delayed loader success, email: ' + self.emailAddress() );
 
                     self.elements.canvas.bind("DOMSubtreeModified", function(e) {
                         self.detectDOMEvents(e);
@@ -164,6 +164,9 @@
             // Try the new one
             var el = this.elements.canvas.find('.gbmp1');
             if(el.length > 0) return el.first().html();
+
+            var emailElement = this.$(".gbps2");
+            return emailElement.html();
         },
 
         /**
@@ -215,7 +218,7 @@
                     if(this.leftMenu && this.leftMenu.length > 0) {
                         this.leftMenuItems = this.leftMenu.find('.TO');
 
-                        p('Fully loaded.');
+                        p('Fully loaded');
                         this.loaded = true;
 
                         this.currentNumUnread = this.numUnread();
