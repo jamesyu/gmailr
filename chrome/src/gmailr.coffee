@@ -14,51 +14,51 @@ Copyright 2012, James Yu, Joscha Feth
     _Gmail_send: null
 
     constructor: (cb) ->
+      return if @initialized
       self = @
-      unless @initialized
-        @initialized = true
-        win = top.document.getElementById("js_frame").contentDocument.defaultView
+      @initialized = true
+      win = top.document.getElementById("js_frame").contentDocument.defaultView
 
-        @_Gmail_open ?= win.XMLHttpRequest::open
-        win.XMLHttpRequest::open = (method, url, async, user, password) ->
-          @xhrParams =
-            method: method.toString()
-            url: url.toString()
-          self._Gmail_open.apply @, arguments
+      @_Gmail_open ?= win.XMLHttpRequest::open
+      win.XMLHttpRequest::open = (method, url, async, user, password) ->
+        @xhrParams =
+          method: method.toString()
+          url: url.toString()
+        self._Gmail_open.apply @, arguments
 
-        @_Gmail_send ?= win.XMLHttpRequest::send
-        win.XMLHttpRequest::send = (body) ->
-          if @xhrParams
-            @xhrParams.body = body
-            cb @xhrParams
-          self._Gmail_send.apply @, arguments
+      @_Gmail_send ?= win.XMLHttpRequest::send
+      win.XMLHttpRequest::send = (body) ->
+        if @xhrParams
+          @xhrParams.body = body
+          cb @xhrParams
+        self._Gmail_send.apply @, arguments
 
-        top._Gmail_iframeFn ?= top.GG_iframeFn
-        @iframeCachedData.push
-          responseDataId: 1
-          url: top.location.href
-          responseData: top.VIEW_DATA
+      top._Gmail_iframeFn ?= top.GG_iframeFn
+      @iframeCachedData.push
+        responseDataId: 1
+        url: top.location.href
+        responseData: top.VIEW_DATA
 
-        top.GG_iframeFn = (win, data) ->
-          d = top._Gmail_iframeFn.apply @, arguments
+      top.GG_iframeFn = (win, data) ->
+        d = top._Gmail_iframeFn.apply @, arguments
+        try
+          url = win?.location?.href ? null
+          if data and url?.indexOf("act=") isnt -1
+            unless self.iframeData[url]
+              self.iframeData[url] = true
+              body = ""
+              if (parent = win.frameElement.parentNode)
+                tmp = $(parent).find "form"
+                body = tmp.first().serialize() if tmp.length > 0
+
+              cb
+                body: body
+                url: url
+
+        catch e
           try
-            url = win?.location?.href ? null
-            if data and url?.indexOf("act=") isnt -1
-              unless self.iframeData[url]
-                self.iframeData[url] = true
-                body = ""
-                if (parent = win.frameElement.parentNode)
-                  tmp = $(parent).find "form"
-                  body = tmp.first().serialize() if tmp.length > 0
-
-                cb
-                  body: body
-                  url: url
-
-          catch e
-            try
-              dbg "DEBUG error in GG_iframeFn: ", e
-          d
+            dbg "DEBUG error in GG_iframeFn: ", e
+        d
   
   # Utility methods
   dbg = (args...) ->
@@ -109,9 +109,13 @@ Copyright 2012, James Yu, Joscha Feth
     #            });
     #        
     init: (cb) ->
+      if @loaded
+        dbg "Gmailr has already been initialized"
+        cb? this
+        return
+
       dbg "Initializing Gmailr API"
       count = 0
-      
       # Here we do delayed loading until success. This is in the case
       # that our script loads after Gmail has already loaded.
       load = =>
@@ -132,6 +136,39 @@ Copyright 2012, James Yu, Joscha Feth
 
       @delayed_loader = setInterval load, 500
       return
+
+    ###
+    This method attempts to bootstrap Gmailr into the Gmail interface.
+    Basically, this amounts polling to make sure Gmail has fully loaded,
+    and then setting up some basic hooks.
+    ###
+    bootstrap: (cb) ->
+      if @inBootstrap
+        return
+      @inBootstrap = true
+      if @elements.body
+        el = $(@elements.body)
+        
+        # get handle on the left menu
+        if not @leftMenu or @leftMenu.length is 0
+          
+          #                  this.leftMenu = el.find('.no .nM .TK').first().closest('.nn');
+          inboxLink = @getInboxLink()
+          v = el.find("a[href$='#mbox']")
+          @priorityInboxLink = v.first()  if v.length > 0
+          if inboxLink
+            @leftMenu = inboxLink.closest(".TO").closest("div")
+          else @leftMenu = @priorityInboxLink.closest(".TO").closest("div")  if @priorityInboxLink
+          if @leftMenu and @leftMenu.length > 0
+            @leftMenuItems = @leftMenu.find(".TO")
+            dbg "Fully loaded."
+            @loaded = true
+            @currentNumUnread = @numUnread()
+            @currentInboxCount = @toolbarCount()  if @inboxTabHighlighted()
+            @xhrWatcher = new XHRWatcher @detectXHREvents
+            cb? this
+        @inBootstrap = false
+        return
 
     intercept: ->
       throw "Call to method before Gmail has loaded" unless @loaded
@@ -172,7 +209,7 @@ Copyright 2012, James Yu, Joscha Feth
     notify: (type, args...) ->
       if @observers[type]
         for listener in @observers[type]
-          listener.apply @, args
+          listener?.apply? @, args
       return
 
     
@@ -209,43 +246,6 @@ Copyright 2012, James Yu, Joscha Feth
     currentView: ->
       @intercept()
       if @elements.canvas.find("h1.ha").length > 0 then @VIEW_CONVERSATION else @VIEW_THREADED
-
-    
-    ###
-    Private Methods
-    ###
-    
-    ###
-    This method attempts to bootstrap Gmailr into the Gmail interface.
-    Basically, this amounts polling to make sure Gmail has fully loaded,
-    and then setting up some basic hooks.
-    ###
-    bootstrap: (cb) ->
-      if @inBootstrap
-        return
-      @inBootstrap = true
-      if @elements.body
-        el = $(@elements.body)
-        
-        # get handle on the left menu
-        if not @leftMenu or @leftMenu.length is 0
-          
-          #                  this.leftMenu = el.find('.no .nM .TK').first().closest('.nn');
-          inboxLink = @getInboxLink()
-          v = el.find("a[href$='#mbox']")
-          @priorityInboxLink = v.first()  if v.length > 0
-          if inboxLink
-            @leftMenu = inboxLink.closest(".TO").closest("div")
-          else @leftMenu = @priorityInboxLink.closest(".TO").closest("div")  if @priorityInboxLink
-          if @leftMenu and @leftMenu.length > 0
-            @leftMenuItems = @leftMenu.find(".TO")
-            dbg "Fully loaded."
-            @loaded = true
-            @currentNumUnread = @numUnread()
-            @currentInboxCount = @toolbarCount()  if @inboxTabHighlighted()
-            @xhrWatcher = new XHRWatcher @detectXHREvents
-            cb this  if cb
-        @inBootstrap = false
 
     getInboxLink: ->
       # use the inbox link as an anchor
@@ -451,4 +451,6 @@ Copyright 2012, James Yu, Joscha Feth
   Gmailr = new Gmailr
 
   window.Gmailr = Gmailr
+  return
+
 ) jQuery, window

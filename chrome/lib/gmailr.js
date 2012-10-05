@@ -25,67 +25,68 @@ var __slice = [].slice,
 
     function XHRWatcher(cb) {
       var self, win, _ref, _ref1, _ref2;
-      self = this;
-      if (!this.initialized) {
-        this.initialized = true;
-        win = top.document.getElementById("js_frame").contentDocument.defaultView;
-        if ((_ref = this._Gmail_open) == null) {
-          this._Gmail_open = win.XMLHttpRequest.prototype.open;
-        }
-        win.XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
-          this.xhrParams = {
-            method: method.toString(),
-            url: url.toString()
-          };
-          return self._Gmail_open.apply(this, arguments);
-        };
-        if ((_ref1 = this._Gmail_send) == null) {
-          this._Gmail_send = win.XMLHttpRequest.prototype.send;
-        }
-        win.XMLHttpRequest.prototype.send = function(body) {
-          if (this.xhrParams) {
-            this.xhrParams.body = body;
-            cb(this.xhrParams);
-          }
-          return self._Gmail_send.apply(this, arguments);
-        };
-        if ((_ref2 = top._Gmail_iframeFn) == null) {
-          top._Gmail_iframeFn = top.GG_iframeFn;
-        }
-        this.iframeCachedData.push({
-          responseDataId: 1,
-          url: top.location.href,
-          responseData: top.VIEW_DATA
-        });
-        top.GG_iframeFn = function(win, data) {
-          var body, d, parent, tmp, url, _ref3, _ref4;
-          d = top._Gmail_iframeFn.apply(this, arguments);
-          try {
-            url = (_ref3 = win != null ? (_ref4 = win.location) != null ? _ref4.href : void 0 : void 0) != null ? _ref3 : null;
-            if (data && (url != null ? url.indexOf("act=") : void 0) !== -1) {
-              if (!self.iframeData[url]) {
-                self.iframeData[url] = true;
-                body = "";
-                if ((parent = win.frameElement.parentNode)) {
-                  tmp = $(parent).find("form");
-                  if (tmp.length > 0) {
-                    body = tmp.first().serialize();
-                  }
-                }
-                cb({
-                  body: body,
-                  url: url
-                });
-              }
-            }
-          } catch (e) {
-            try {
-              dbg("DEBUG error in GG_iframeFn: ", e);
-            } catch (_error) {}
-          }
-          return d;
-        };
+      if (this.initialized) {
+        return;
       }
+      self = this;
+      this.initialized = true;
+      win = top.document.getElementById("js_frame").contentDocument.defaultView;
+      if ((_ref = this._Gmail_open) == null) {
+        this._Gmail_open = win.XMLHttpRequest.prototype.open;
+      }
+      win.XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
+        this.xhrParams = {
+          method: method.toString(),
+          url: url.toString()
+        };
+        return self._Gmail_open.apply(this, arguments);
+      };
+      if ((_ref1 = this._Gmail_send) == null) {
+        this._Gmail_send = win.XMLHttpRequest.prototype.send;
+      }
+      win.XMLHttpRequest.prototype.send = function(body) {
+        if (this.xhrParams) {
+          this.xhrParams.body = body;
+          cb(this.xhrParams);
+        }
+        return self._Gmail_send.apply(this, arguments);
+      };
+      if ((_ref2 = top._Gmail_iframeFn) == null) {
+        top._Gmail_iframeFn = top.GG_iframeFn;
+      }
+      this.iframeCachedData.push({
+        responseDataId: 1,
+        url: top.location.href,
+        responseData: top.VIEW_DATA
+      });
+      top.GG_iframeFn = function(win, data) {
+        var body, d, parent, tmp, url, _ref3, _ref4;
+        d = top._Gmail_iframeFn.apply(this, arguments);
+        try {
+          url = (_ref3 = win != null ? (_ref4 = win.location) != null ? _ref4.href : void 0 : void 0) != null ? _ref3 : null;
+          if (data && (url != null ? url.indexOf("act=") : void 0) !== -1) {
+            if (!self.iframeData[url]) {
+              self.iframeData[url] = true;
+              body = "";
+              if ((parent = win.frameElement.parentNode)) {
+                tmp = $(parent).find("form");
+                if (tmp.length > 0) {
+                  body = tmp.first().serialize();
+                }
+              }
+              cb({
+                body: body,
+                url: url
+              });
+            }
+          }
+        } catch (e) {
+          try {
+            dbg("DEBUG error in GG_iframeFn: ", e);
+          } catch (_error) {}
+        }
+        return d;
+      };
     }
 
     return XHRWatcher;
@@ -167,6 +168,13 @@ var __slice = [].slice,
     Gmailr.prototype.init = function(cb) {
       var count, load,
         _this = this;
+      if (this.loaded) {
+        dbg("Gmailr has already been initialized");
+        if (typeof cb === "function") {
+          cb(this);
+        }
+        return;
+      }
       dbg("Initializing Gmailr API");
       count = 0;
       load = function() {
@@ -185,6 +193,52 @@ var __slice = [].slice,
         }
       };
       this.delayed_loader = setInterval(load, 500);
+    };
+
+    /*
+        This method attempts to bootstrap Gmailr into the Gmail interface.
+        Basically, this amounts polling to make sure Gmail has fully loaded,
+        and then setting up some basic hooks.
+    */
+
+
+    Gmailr.prototype.bootstrap = function(cb) {
+      var el, inboxLink, v;
+      if (this.inBootstrap) {
+        return;
+      }
+      this.inBootstrap = true;
+      if (this.elements.body) {
+        el = $(this.elements.body);
+        if (!this.leftMenu || this.leftMenu.length === 0) {
+          inboxLink = this.getInboxLink();
+          v = el.find("a[href$='#mbox']");
+          if (v.length > 0) {
+            this.priorityInboxLink = v.first();
+          }
+          if (inboxLink) {
+            this.leftMenu = inboxLink.closest(".TO").closest("div");
+          } else {
+            if (this.priorityInboxLink) {
+              this.leftMenu = this.priorityInboxLink.closest(".TO").closest("div");
+            }
+          }
+          if (this.leftMenu && this.leftMenu.length > 0) {
+            this.leftMenuItems = this.leftMenu.find(".TO");
+            dbg("Fully loaded.");
+            this.loaded = true;
+            this.currentNumUnread = this.numUnread();
+            if (this.inboxTabHighlighted()) {
+              this.currentInboxCount = this.toolbarCount();
+            }
+            this.xhrWatcher = new XHRWatcher(this.detectXHREvents);
+            if (typeof cb === "function") {
+              cb(this);
+            }
+          }
+        }
+        this.inBootstrap = false;
+      }
     };
 
     Gmailr.prototype.intercept = function() {
@@ -228,7 +282,11 @@ var __slice = [].slice,
         _ref = this.observers[type];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           listener = _ref[_i];
-          listener.apply(this, args);
+          if (listener != null) {
+            if (typeof listener.apply === "function") {
+              listener.apply(this, args);
+            }
+          }
         }
       }
     };
@@ -270,57 +328,6 @@ var __slice = [].slice,
         return this.VIEW_CONVERSATION;
       } else {
         return this.VIEW_THREADED;
-      }
-    };
-
-    /*
-        Private Methods
-    */
-
-
-    /*
-        This method attempts to bootstrap Gmailr into the Gmail interface.
-        Basically, this amounts polling to make sure Gmail has fully loaded,
-        and then setting up some basic hooks.
-    */
-
-
-    Gmailr.prototype.bootstrap = function(cb) {
-      var el, inboxLink, v;
-      if (this.inBootstrap) {
-        return;
-      }
-      this.inBootstrap = true;
-      if (this.elements.body) {
-        el = $(this.elements.body);
-        if (!this.leftMenu || this.leftMenu.length === 0) {
-          inboxLink = this.getInboxLink();
-          v = el.find("a[href$='#mbox']");
-          if (v.length > 0) {
-            this.priorityInboxLink = v.first();
-          }
-          if (inboxLink) {
-            this.leftMenu = inboxLink.closest(".TO").closest("div");
-          } else {
-            if (this.priorityInboxLink) {
-              this.leftMenu = this.priorityInboxLink.closest(".TO").closest("div");
-            }
-          }
-          if (this.leftMenu && this.leftMenu.length > 0) {
-            this.leftMenuItems = this.leftMenu.find(".TO");
-            dbg("Fully loaded.");
-            this.loaded = true;
-            this.currentNumUnread = this.numUnread();
-            if (this.inboxTabHighlighted()) {
-              this.currentInboxCount = this.toolbarCount();
-            }
-            this.xhrWatcher = new XHRWatcher(this.detectXHREvents);
-            if (cb) {
-              cb(this);
-            }
-          }
-        }
-        return this.inBootstrap = false;
       }
     };
 
@@ -533,5 +540,5 @@ var __slice = [].slice,
 
   })();
   Gmailr = new Gmailr;
-  return window.Gmailr = Gmailr;
+  window.Gmailr = Gmailr;
 })(jQuery, window);
