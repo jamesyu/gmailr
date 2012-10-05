@@ -305,12 +305,20 @@ Copyright 2012, James Yu, Joscha Feth
       inReplyTo: (if postParams.rm is "undefined" then null else postParams.rm)
       body: postParams.body ? null
       subject: postParams.subject ? null
-      bcc: postParams.bcc ? null
-      to: postParams.to ? null
+      bcc: @toEmailArray postParams.bcc
+      to: @toEmailArray postParams.to
       from: postParams.from
       isHTML: postParams.ishtml is '1'
-      cc: postParams.cc ? null
+      cc: @toEmailArray postParams.cc
       fromDraft: (if postParams.draft is "undefined" then null else postParams.draft)
+
+    # Adapted from http://notepad2.blogspot.com/2012/02/javascript-parse-string-of-email.html
+    toEmailArray: (str) ->
+      return [] if !str
+      regex = /(?:"([^"]+)")? ?<?(.*?@[^>,]+)>?,? ?/g;
+      while (m = regex.exec str)
+          name:  m[1]
+          email: m[2]
 
     detectXHREvents: (params) =>
       try

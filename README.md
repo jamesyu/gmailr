@@ -88,15 +88,17 @@ If `count` is `-1` that means the user made a bulk event which affects more than
 
 Contents of the `emailProperties` object are:
 
-* `inReplyTo` (message id of the email that this is in reply to, or `null` if not in reply to anything)
-* `body`
-* `subject`
-* `bcc`
-* `to`
-* `from`
-* `isHTML` (boolean)
-* `cc`
-* `fromDraft` (message id of the draft or `null` if there was no draft)
+* `inReplyTo`: (message id of the email that this is in reply to, or `null` if not in reply to anything)
+* `body`: String (or `null` if not defined)
+* `subject`: String (or `null` if not defined)
+* `bcc`: Array
+* `to`: Array
+* `from`: String (the email address you are sending from)
+* `isHTML`: (boolean)
+* `cc`: Array
+* `fromDraft`: (message id of the draft or `null` if there was no draft)
+
+`to`, `cc` and `bcc` are Arrays of name, email tuple objects, e.g. `{name: 'Name', email: 'email@email.email' }`
 
 ---
 
