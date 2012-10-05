@@ -69,17 +69,18 @@ Copyright 2012, James Yu, Joscha Feth
 
   class Gmailr
     
-    debug: false
-    priorityInboxLink: null
-    currentNumUnread: null
-    currentInboxCount: null
-    elements: {}
-    currentLeftMenuItem: null
-    observers: {}
-    loaded: false
-    inConversationView: false
-    xhrWatcher: null
-    delayedLoader: null
+    debug:                false
+    priorityInboxLink:    null
+    currentNumUnread:     null
+    currentInboxCount:    null
+    elements:             {}
+    currentLeftMenuItem:  null
+    observers:            {}
+    loaded:               false
+    inConversationView:   false
+    xhrWatcher:           null
+    delayedLoader:        null
+    ignoreDOMElements:      []
 
     EVENT_VIEW_THREAD:        'viewThread'
     EVENT_ARCHIVE:            'archive'
@@ -302,15 +303,15 @@ Copyright 2012, James Yu, Joscha Feth
         if @mainListingEmpty() then 0 else null
 
     toEmailProps: (postParams) ->
-      inReplyTo: (if postParams.rm is "undefined" then null else postParams.rm)
-      body: postParams.body ? null
-      subject: postParams.subject ? null
-      bcc: @toEmailArray postParams.bcc
-      to: @toEmailArray postParams.to
-      from: postParams.from
-      isHTML: postParams.ishtml is '1'
-      cc: @toEmailArray postParams.cc
-      fromDraft: (if postParams.draft is "undefined" then null else postParams.draft)
+      inReplyTo:  (if postParams.rm is "undefined" then null else postParams.rm)
+      body:       postParams.body ? null
+      subject:    postParams.subject ? null
+      bcc:        @toEmailArray postParams.bcc
+      to:         @toEmailArray postParams.to
+      from:       postParams.from
+      isHTML:     postParams.ishtml is '1'
+      cc:         @toEmailArray postParams.cc
+      fromDraft:  (if postParams.draft is "undefined" then null else postParams.draft)
 
     # Adapted from http://notepad2.blogspot.com/2012/02/javascript-parse-string-of-email.html
     toEmailArray: (str) ->
