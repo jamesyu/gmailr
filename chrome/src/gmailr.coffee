@@ -196,14 +196,6 @@ Copyright 2012, James Yu, Joscha Feth
     
     ###
     Subscribe to a specific event in Gmail
-    name                arguments passed to callback
-    'archive'         - count
-    'numUnreadChange' - currentVal, previousVal
-    'delete'          - count
-    'spam'            - count
-    'compose'
-    'viewChanged'
-    'applyLabel'
     ###
     observe: (type, cb) ->
       (@observers[type] ?= []).push cb
