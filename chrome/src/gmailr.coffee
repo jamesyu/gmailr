@@ -79,6 +79,7 @@ Copyright 2012, James Yu, Joscha Feth
     loaded: false
     inConversationView: false
     xhrWatcher: null
+    delayedLoader: null
 
     EVENT_VIEW_THREAD:        'viewThread'
     EVENT_ARCHIVE:            'archive'
@@ -116,26 +117,22 @@ Copyright 2012, James Yu, Joscha Feth
         return
 
       dbg "Initializing Gmailr API"
-      count = 0
       # Here we do delayed loading until success. This is in the case
       # that our script loads after Gmail has already loaded.
       load = =>
         @elements.canvas = $("[style*='min-height: 100%;']")
         @elements.body = @elements.canvas.find(".nH").first()
         if @loaded
-          dbg "Delayed loader success." unless count is 0
+          clearInterval @delayedLoader
+          dbg "Delayed loader success."
           @elements.body.bind 'DOMSubtreeModified', @detectDOMEvents
-
-          clearInterval @delayed_loader
         else
-          dbg "Calling delayed loader..."
-          count++
-          
+          dbg "Calling delayed loader..."      
           # we search from the body node, since there's no event to attach to
           @bootstrap cb
         return
 
-      @delayed_loader = setInterval load, 500
+      @delayedLoader = setInterval load, 500
       return
 
     ###
