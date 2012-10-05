@@ -78,6 +78,7 @@ Copyright 2012, James Yu, Joscha Feth
     observers: {}
     loaded: false
     inConversationView: false
+    xhrWatcher: null
 
     EVENT_VIEW_THREAD:        'viewThread'
     EVENT_ARCHIVE:            'archive'
