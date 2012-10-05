@@ -176,9 +176,12 @@ Copyright 2012, James Yu, Joscha Feth
     #
     #            Inserts the element to the top of the Gmail interface.
     #        
-    insertTop: (el) ->
+    insertTop: (el, ignoreDOMEvents = true) ->
       @intercept()
-      @elements.body.prepend $(el)
+      el = $ el
+      @elements.body.prepend el
+      @ignoreDOMElements.push el.get(0) if ignoreDOMEvents
+      return
 
     
     #
@@ -416,8 +419,16 @@ Copyright 2012, James Yu, Joscha Feth
       return
 
     detectDOMEvents: (e) =>
-      el = $(e.target)
+      # dbg "DOM changed", e.target
+      for ignored in @ignoreDOMElements
+        # check all the ignored DOM elements
+        if $.contains ignored, e.target
+          # the target from where the change came is a descendant of an ignored element
+          # dbg "...but the event came from a descendant of an ignored element"
+          return
       
+      el = $(e.target)
+
       # Left Menu Changes
       #var s = this.liveLeftMenuItem();
       #            if(this.currentLeftMenuItem != s) {
