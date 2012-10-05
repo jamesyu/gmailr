@@ -76,4 +76,8 @@ Gmailr.init(function(G) {
         status('The unread count changed from ' + oldCount + ' to ' + newCount);
     });
 
+    G.observe(Gmailr.EVENT_VIEW_THREAD, function(threadId) {
+        status('Switched to thread with ID '+ threadId);
+    });
+
 });
