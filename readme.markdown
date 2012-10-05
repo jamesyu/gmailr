@@ -12,12 +12,15 @@ The library is packaged here as a Chrome extension that presents some status inf
 
 To install the extension, clone the repo and:
 
-1. Open Chrome and go to chrome://extensions
-2. If the Developer Mode toggle is set to "-", click it to go into Developer Mode.
-3. Click "Load unpacked extension..."
-4. Choose the `chrome` directory in this repo.
-5. Enable the newly added extension.
-6. Head to your Gmail account, and you should now see a blue Gmailr bar above the top bar.
+
+- Get an install CoffeeScript for your system
+- Run cake build in the root directory to generate JavaScript files from the CoffeeScript source
+- Open Chrome and go to chrome://extensions
+- If the Developer Mode toggle is set to "-", click it to go into Developer Mode.
+- Click "Load unpacked extension..."
+- Choose the `chrome` directory in this repo.
+- Enable the newly added extension.
+- Head to your Gmail account, and you should now see a blue Gmailr bar above the top bar.
 
 Try archiving or deleting an email, and you'll see the status bar display the action.
 
@@ -25,6 +28,7 @@ Creating Your Own Extension
 ===========================
 
 To create your own extension using Gmailr, simply change main.js to implement your functionality.
+You can add more resources to load in init.coffee - simply add files to the array - if they are local files coming from the extension, you need to make them web-accessible in the `manifest.json`
 
 Extension Architecture
 ----------------------
@@ -33,7 +37,8 @@ You'll notice that the extension does a lot of roundabout loading of the js file
 
 Thus, we have to manually inject the scripts into the head of the Gmail DOM.
 
-`bootstrap.js` is first loaded like a normal content script, and it injects `lab.js` and `init.js`. Then, `init.js` loads the rest of the js files using LAB, and finally `main.js` is loaded with access to the Gmailr API.
+`bootstrap.js` is first loaded like a normal content script, and it loads all other files needed for Gmailr.
+Finally `main.js` is loaded with access to the Gmailr API.
 
 Development Notes
 -----------------
@@ -62,14 +67,39 @@ The elements hash holds some interesting elements inside Gmail. Currently, there
 
 This method will observe to various actions that the user does in Gmail, and will call a callback based on those actions. The available types are (with the callback arguments):
 
-* 'archive'         - callback(count)
-* 'numUnreadChange' - callback(currentVal, previousVal)
-* 'delete'          - callback(count)
-* 'spam'            - callback(count)
-* 'compose'         - no args
-* 'viewChanged'     - no args
+* `EVENT_VIEW_THREAD`: threadId
+* `EVENT_ARCHIVE`: count, [messageId,  ...]
+* `EVENT_APPLY_LABEL`: label, count, [messageId,  ...]
+* `EVENT_DELETE`: count, [messageId,  ...]
+* `EVENT_COMPOSE`: emailProperties
+* `EVENT_REPLY`: emailProperties
+* `EVENT_SPAM`: count, [messageId,  ...]
+* `EVENT_DRAFT_DISCARD`: 
+* `EVENT_DRAFT_SAVE`: emailProperties
+* `EVENT_MARK_UNREAD`: count, [messageId,  ...]
+* `EVENT_MARK_READ`: count, [messageId,  ...]
+* `EVENT_STAR`: count, [messageId,  ...]
+* `EVENT_UNSTAR`: count, [messageId,  ...]
+* `EVENT_UNREAD_CHANGE`: current, previous
+* `EVENT_INBOX_COUNT_CHANGE`: current, previous
+* `EVENT_VIEW_CHANGED`: type (either `VIEW_THREADED` or `VIEW_CONVERSATION`)
 
-Currently, you won't get any information about the contents of the email messages.
+If `count` is `-1` that means the user made a bulk event which affects more than only the visible emails on the current page.
+
+Contents of the `emailProperties` object are:
+
+* `inReplyTo` (message id of the email that this is in reply to, or `null` if not in reply to anything)
+* `body`
+* `subject`
+* `bcc`
+* `to`
+* `from`
+* `isHTML` (boolean)
+* `cc`
+* `fromDraft` (message id of the draft or `null` if there was no draft)
+
+---
+
 
     G.insertTop(el)
     
@@ -99,4 +129,3 @@ There are much more TODOs than I have time for :)
 
 * More stability and accuracy for various events.
 * Ability to add DOM elements in various places in Gmail, like the sidebar, etc.
-* Ability to get more information about emails that are archived, composed, etc.
