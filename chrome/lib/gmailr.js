@@ -159,11 +159,8 @@
 
             // add selectors here if/when gmail changes this
             var emailSelectors = ['#guser b', '.gbmp1', ".gbps2"]
-
-            for( var i = 0; i < emailSelectors.length; i++ ) {
-              var el = this.elements.canvas.find(emailSelectors[i]);
-              if(el.length > 0) return el.first().html();
-            }
+            
+            return this.elements.canvas.find(emailSelectors.join(',')).first().html();
         },
 
         /**
