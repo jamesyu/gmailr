@@ -228,9 +228,13 @@ Copyright 2012, James Yu, Joscha Feth
     ###
     emailAddress: ->
       @intercept()
-      # First, try old Gmail header
-      # Try the new one
-      selectors = ["#guser b", ".gbmp1", "#gbi4t"] # Google+ (as of 2012-10-05)
+      
+      selectors = [
+        "#guser b" # First, try old Gmail header
+        ".gbmp1" # Try the new one
+        '.gbps2'
+        "#gbi4t" # Google+ (as of 2012-10-05)
+      ] 
       el = @elements.canvas.find selectors.join ','
       el.first().html()
 
