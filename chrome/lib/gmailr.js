@@ -77,7 +77,7 @@
 
                 if(self.loaded) {
                     if(delayed_loader_count != 0)
-                        dbg('Delayed loader success.');
+                        dbg('Delayed loader success, email: ' + self.emailAddress() );
 
                     self.elements.canvas.bind("DOMSubtreeModified", function(e) {
                         self.detectDOMEvents(e);
@@ -157,13 +157,13 @@
         emailAddress: function() {
             if(!this.loaded) throw "Call to emailAddress before Gmail has loaded";
 
-            // First, try old Gmail header
-            var el = this.elements.canvas.find('#guser b');
-            if(el.length > 0) return el.first().html();
+            // add selectors here if/when gmail changes this
+            var emailSelectors = ['#guser b', '.gbmp1', ".gbps2"]
 
-            // Try the new one
-            var el = this.elements.canvas.find('.gbmp1');
-            if(el.length > 0) return el.first().html();
+            for( var i = 0; i < emailSelectors.length; i++ ) {
+              var el = this.elements.canvas.find(emailSelectors[i]);
+              if(el.length > 0) return el.first().html();
+            }
         },
 
         /**
@@ -215,7 +215,7 @@
                     if(this.leftMenu && this.leftMenu.length > 0) {
                         this.leftMenuItems = this.leftMenu.find('.TO');
 
-                        p('Fully loaded.');
+                        p('Fully loaded');
                         this.loaded = true;
 
                         this.currentNumUnread = this.numUnread();
