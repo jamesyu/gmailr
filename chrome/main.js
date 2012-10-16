@@ -80,4 +80,8 @@ Gmailr.init(function(G) {
         status('Switched to thread with ID '+ threadId);
     });
 
+    G.observe(Gmailr.EVENT_REFRESH_INBOX, function() {
+        status('Inbox refreshed');
+    });
+
 });
