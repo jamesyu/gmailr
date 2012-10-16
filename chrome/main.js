@@ -38,11 +38,6 @@ Gmailr.init(function(G) {
         console.log('details', details);
     });
 
-    G.observe(Gmailr.EVENT_MARK_READ, function(c, emails) {
-        status('You marked ' + emails.length + ' email as read.');
-        console.log('emails', emails);
-    });
-
     G.observe(Gmailr.EVENT_MARK_UNREAD, function(c, emails) {
         status('You marked ' + c + ' email as unread.');
         console.log('emails', emails);

@@ -77,7 +77,6 @@ This method will observe to various actions that the user does in Gmail, and wil
 * `EVENT_DRAFT_DISCARD`: 
 * `EVENT_DRAFT_SAVE`: emailProperties
 * `EVENT_MARK_UNREAD`: count, [messageId,  ...]
-* `EVENT_MARK_READ`: count, [messageId,  ...]
 * `EVENT_STAR`: count, [messageId,  ...]
 * `EVENT_UNSTAR`: count, [messageId,  ...]
 * `EVENT_UNREAD_CHANGE`: current, previous

@@ -94,12 +94,13 @@ Copyright 2012, James Yu, Joscha Feth
     EVENT_DRAFT_DISCARD:      'discardDraft'
     EVENT_DRAFT_SAVE:         'saveDraft'
     EVENT_MARK_UNREAD:        'unread'
-    EVENT_MARK_READ:          'read'
+    # EVENT_MARK_READ:          'read'
     EVENT_STAR:               'star'
     EVENT_UNSTAR:             'unstar'
     EVENT_UNREAD_CHANGE:      'numUnreadChange'
     EVENT_INBOX_COUNT_CHANGE: 'inboxCountChange'
     EVENT_VIEW_CHANGED:       'viewChanged'
+    EVENT_REFRESH_INBOX:      'refresh'
 
 
     VIEW_CONVERSATION:  'conversation'
@@ -346,7 +347,10 @@ Copyright 2012, James Yu, Joscha Feth
           # View thread
           when "ad"
             dbg "User views a thred"
-            @notify @EVENT_VIEW_THREAD, urlParams.th
+            unless urlParams.th
+              @notify @EVENT_REFRESH_INBOX
+            else
+              @notify @EVENT_VIEW_THREAD, urlParams.th
 
           # Archiving
           when "rc_^i"
@@ -398,9 +402,9 @@ Copyright 2012, James Yu, Joscha Feth
             @notify @EVENT_MARK_UNREAD, count, postParams.t
 
           # Mark read
-          when "rd"
-            dbg "User marked messages as read."
-            @notify @EVENT_MARK_READ, count, postParams.t
+          #when "rd"
+          #  dbg "User marked messages as read."
+          #  @notify @EVENT_MARK_READ, count, postParams.t
 
           # Star
           when "st"
