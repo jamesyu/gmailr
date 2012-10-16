@@ -63,6 +63,7 @@ Copyright 2012, James Yu, Joscha Feth
   # Utility methods
   dbg = (args...) ->
     console.log.apply console, args if console?.log and Gmailr.debug is true
+    return
 
   isDescendant = (el, t) ->
     t.parents().index(el) >= 0
