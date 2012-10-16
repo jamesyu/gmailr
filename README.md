@@ -67,6 +67,7 @@ The elements hash holds some interesting elements inside Gmail. Currently, there
 
 This method will observe to various actions that the user does in Gmail, and will call a callback based on those actions. The available types are (with the callback arguments):
 
+* `EVENT_LOADED`:
 * `EVENT_VIEW_THREAD`: threadId
 * `EVENT_ARCHIVE`: count, [messageId,  ...]
 * `EVENT_APPLY_LABEL`: label, count, [messageId,  ...]
@@ -77,7 +78,8 @@ This method will observe to various actions that the user does in Gmail, and wil
 * `EVENT_DRAFT_DISCARD`: 
 * `EVENT_DRAFT_SAVE`: emailProperties
 * `EVENT_MARK_UNREAD`: count, [messageId,  ...]
-* `EVENT_STAR`: count, [messageId,  ...]
+
+* `EVENT_MARK_READ`: count, [messageId,  ...]* `EVENT_STAR`: count, [messageId,  ...]
 * `EVENT_UNSTAR`: count, [messageId,  ...]
 * `EVENT_UNREAD_CHANGE`: current, previous
 * `EVENT_INBOX_COUNT_CHANGE`: current, previous

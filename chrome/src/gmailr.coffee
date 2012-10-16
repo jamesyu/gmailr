@@ -85,6 +85,7 @@ Copyright 2012, James Yu, Joscha Feth
     ignoreDOMElements:      []
 
     EVENT_VIEW_THREAD:        'viewThread'
+    EVENT_LOADED:             'load'
     EVENT_ARCHIVE:            'archive'
     EVENT_APPLY_LABEL:        'applyLabel'
     EVENT_DELETE:             'delete'
@@ -132,6 +133,7 @@ Copyright 2012, James Yu, Joscha Feth
           clearInterval @delayedLoader
           dbg "Delayed loader success."
           @elements.body.children().on 'DOMSubtreeModified', @detectDOMEvents
+          @notify @EVENT_LOADED
         else
           dbg "Calling delayed loader..."
           # we search from the body node, since there's no event to attach to
@@ -346,10 +348,11 @@ Copyright 2012, James Yu, Joscha Feth
 
           # View thread
           when "ad"
-            dbg "User views a thred"
+            
             unless urlParams.th
               @notify @EVENT_REFRESH_INBOX
             else
+              dbg "User views a thred"
               @notify @EVENT_VIEW_THREAD, urlParams.th
 
           # Archiving

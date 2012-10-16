@@ -7,11 +7,15 @@ Gmailr.debug = true; // Turn verbose debugging messages on
 
 Gmailr.init(function(G) {
 
-    G.insertTop($("<div id='gmailr'><span>Gmailr Status:</span> <span id='status'>Loaded.</span> </div>"));
+    G.insertTop($("<div id='gmailr'><span>Gmailr Status:</span> <span id='status'></span> </div>"));
 
     var status = function(msg) {
                     G.$('#gmailr #status').html(msg);
                  };
+
+    G.observe(Gmailr.EVENT_LOADED, function() {
+        status('Loaded.');
+    });
 
     G.observe(Gmailr.EVENT_ARCHIVE, function(c, emails) {
         status('You archived ' + c + ' emails.');
