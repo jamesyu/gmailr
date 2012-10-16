@@ -72,7 +72,9 @@
             // Here we do delayed loading until success. This is in the case
             // that our script loads after Gmail has already loaded.
             self.delayed_loader = setInterval(function() {
-                self.elements.canvas = $(document.getElementsByTagName('html')[0]);
+                var canvas_frame;
+                self.elements.canvas = (canvas_frame = document.getElementById("canvas_frame")) ?
+                    $(canvas_frame.contentDocument) : $(document);
                 self.elements.body   = self.elements.canvas.find('body').first();
 
                 if(self.loaded) {
@@ -159,7 +161,7 @@
 
             // add selectors here if/when gmail changes this
             var emailSelectors = ['#guser b', '.gbmp1', ".gbps2"]
-            
+
             return this.elements.canvas.find(emailSelectors.join(',')).first().html();
         },
 
