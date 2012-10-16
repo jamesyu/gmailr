@@ -247,12 +247,17 @@ Copyright 2012, James Yu, Joscha Feth
       @intercept()
       if @elements.canvas.find("h1.ha").length > 0 then @VIEW_CONVERSATION else @VIEW_THREADED
 
+
+    inboxes:  [
+              "a[href$='#inbox'][title^='Inbox']"
+              "a[href$='#inbox'][title^='Posteingang']"
+              ]
+
     getInboxLink: ->
-      # use the inbox link as an anchor
-      @elements.body.find("a[href$='#inbox'][title^='Inbox']").first() or null
+      @elements.body.find(@inboxes.join ',').first() or null
 
     liveLeftMenuItem: ->
-      return null  unless @loaded
+      return null unless @loaded
       el = @leftMenuItems.filter(".nZ").find("a")
       if el[0]
         el[0].title
