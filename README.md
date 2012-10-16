@@ -82,6 +82,7 @@ This method will observe to various actions that the user does in Gmail, and wil
 * `EVENT_UNSTAR`: count, [messageId,  ...]
 * `EVENT_UNREAD_CHANGE`: current, previous
 * `EVENT_INBOX_COUNT_CHANGE`: current, previous
+* `EVENT_REFRESH_INBOX`: 
 * `EVENT_VIEW_CHANGED`: type (either `VIEW_THREADED` or `VIEW_CONVERSATION`)
 
 If `count` is `-1` that means the user made a bulk event which affects more than only the visible emails on the current page.
