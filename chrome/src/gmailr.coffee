@@ -123,8 +123,10 @@ Copyright 2012, James Yu, Joscha Feth
       # Here we do delayed loading until success. This is in the case
       # that our script loads after Gmail has already loaded.
       load = =>
-        @elements.canvas = $("[style*='min-height: 100%;']")
+        @elements.canvas = if (canvas_frame = $("#canvas_frame").get 0) then $ canvas_frame.contentDocument else $ document
+        #dbg @elements.canvas
         @elements.body = @elements.canvas.find(".nH").first()
+        #dbg @elements.body
         if @loaded
           clearInterval @delayedLoader
           dbg "Delayed loader success."
@@ -144,32 +146,30 @@ Copyright 2012, James Yu, Joscha Feth
     and then setting up some basic hooks.
     ###
     bootstrap: (cb) ->
-      if @inBootstrap
-        return
-      @inBootstrap = true
-      if @elements.body
-        el = $(@elements.body)
-        
-        # get handle on the left menu
-        if not @leftMenu or @leftMenu.length is 0
-          
-          #                  this.leftMenu = el.find('.no .nM .TK').first().closest('.nn');
-          inboxLink = @getInboxLink()
-          v = el.find("a[href$='#mbox']")
-          @priorityInboxLink = v.first()  if v.length > 0
-          if inboxLink
-            @leftMenu = inboxLink.closest(".TO").closest("div")
-          else @leftMenu = @priorityInboxLink.closest(".TO").closest("div")  if @priorityInboxLink
-          if @leftMenu and @leftMenu.length > 0
-            @leftMenuItems = @leftMenu.find(".TO")
-            dbg "Fully loaded."
-            @loaded = true
-            @currentNumUnread = @numUnread()
-            @currentInboxCount = @toolbarCount()  if @inboxTabHighlighted()
-            @xhrWatcher = new XHRWatcher @detectXHREvents
-            cb? this
+      unless @inBootstrap
+
+        @inBootstrap = true
+        if @elements.body
+          # get handle on the left menu
+          if not @leftMenu or @leftMenu.length is 0
+            #                  this.leftMenu = el.find('.no .nM .TK').first().closest('.nn');
+            if (inboxLink = @getInboxLink())
+              @leftMenu = inboxLink.closest(".TO").closest "div"
+            else
+              v = @elements.body.find("a[href$='#mbox']")
+              @priorityInboxLink = v.first() if v.length > 0
+              @leftMenu = @priorityInboxLink.closest(".TO").closest "div" if @priorityInboxLink
+
+            if @leftMenu and @leftMenu.length > 0
+              @leftMenuItems = @leftMenu.find ".TO"
+              dbg "Fully loaded."
+              @loaded = true
+              @currentNumUnread = @numUnread()
+              @currentInboxCount = @toolbarCount()  if @inboxTabHighlighted()
+              @xhrWatcher = new XHRWatcher @detectXHREvents
+              cb? @
         @inBootstrap = false
-        return
+      return
 
     intercept: ->
       throw "Call to method before Gmail has loaded" unless @loaded
