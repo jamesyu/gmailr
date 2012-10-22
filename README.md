@@ -85,6 +85,7 @@ This method will observe to various actions that the user does in Gmail, and wil
 * `EVENT_INBOX_COUNT_CHANGE`: current, previous
 * `EVENT_REFRESH_INBOX`: 
 * `EVENT_VIEW_CHANGED`: type (either `VIEW_THREADED` or `VIEW_CONVERSATION`)
+* `EVENT_ANY`: type, arguments - this meta event gets fired on any of the events above with `type` being one of `Gmailr.EVENT_*` and the second argument an array of parameters
 
 If `count` is `-1` that means the user made a bulk event which affects more than only the visible emails on the current page.
 

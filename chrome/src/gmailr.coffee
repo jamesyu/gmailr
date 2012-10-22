@@ -102,6 +102,7 @@ Copyright 2012, James Yu, Joscha Feth
     EVENT_INBOX_COUNT_CHANGE: 'inboxCountChange'
     EVENT_VIEW_CHANGED:       'viewChanged'
     EVENT_REFRESH_INBOX:      'refresh'
+    EVENT_ANY:                'any'
 
 
     VIEW_CONVERSATION:  'conversation'
@@ -209,6 +210,9 @@ Copyright 2012, James Yu, Joscha Feth
       if @observers[type]
         for listener in @observers[type]
           listener?.apply? @, args
+      if type isnt @EVENT_ANY
+        for listener in @observers[@EVENT_ANY]
+          listener?.call? @, type, args
       return
 
     
