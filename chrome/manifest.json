@@ -24,11 +24,7 @@
   "manifest_version" : 2,
   "web_accessible_resources" : [
     "lib/gmailr.js",
-    "lib/init.js",
-    "lib/jquery.1.4.2.js",
     "lib/jquery-bbq/jquery.ba-bbq.min.js",
-
-    "main.css",
     "main.js"
   ]
 }
