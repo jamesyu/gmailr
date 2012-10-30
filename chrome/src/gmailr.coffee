@@ -241,7 +241,6 @@ Copyright 2012, James Yu, Joscha Feth
         "#guser b" # First, try old Gmail header
         ".gbmp1" # Try the new one
         '.gbps2'
-        "#gbi4t" # Google+ (as of 2012-10-05)
       ] 
       el = @elements.canvas.find selectors.join ','
       el.first().html()
