@@ -255,8 +255,11 @@ Copyright 2012, James Yu, Joscha Feth
 
 
     inboxes:  [
-              "a[href$='#inbox'][title^='Inbox']"
-              "a[href$='#inbox'][title^='Posteingang']"
+              "a[href$='#inbox'][title^='Inbox']"       # English
+              "a[href$='#inbox'][title^='Posteingang']" # German
+              "a[href$='#inbox'][title^='Postvak IN']"  # Dutch
+              
+              "a[href$='#inbox']:not([title='Gmail'])"  # Generic fallback
               ]
 
     getInboxLink: ->
