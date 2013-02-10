@@ -259,7 +259,7 @@ Copyright 2012, James Yu, Joscha Feth
               "a[href$='#inbox'][title^='Posteingang']" # German
               "a[href$='#inbox'][title^='Postvak IN']"  # Dutch
               
-              "a[href$='#inbox']:not([title='Gmail'])"  # Generic fallback
+              "a[href$='#inbox'][target='_top']"  # Generic fallback
               ]
 
     getInboxLink: ->
