@@ -3,4 +3,4 @@
 	url = git://github.com/SlexAxton/yepnope.js.git
 [submodule "chrome/lib/jquery-bbq"]
 	path = chrome/lib/jquery-bbq
-	url = git://github.com/cowboy/jquery-bbq.git
+url=git://github.com/dadario/jquery-bbq.git

@@ -4,9 +4,9 @@
 if top.document is document
     yepnope
         test: !jQuery? 
-        yep: 'https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js'
+        yep: 'https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js'
     yepnope [
-        chrome.extension.getURL "lib/jquery-bbq/jquery.ba-bbq.min.js"
+        chrome.extension.getURL "lib/jquery-bbq/jquery.ba-bbq.js"
         chrome.extension.getURL "lib/gmailr.js"
         chrome.extension.getURL "main.js"
     ]
