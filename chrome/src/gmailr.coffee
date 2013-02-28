@@ -62,6 +62,7 @@ Copyright 2012, James Yu, Joscha Feth
   
   # Utility methods
   dbg = (args...) ->
+    args.unshift '[Gmailr]'
     console.log.apply console, args if console?.log and Gmailr.debug is true
     return
 
