@@ -142,7 +142,7 @@ Copyright 2012, James Yu, Joscha Feth
           @bootstrap cb
         return
 
-      @delayedLoader = setInterval load, 500
+      @delayedLoader = setInterval load, 200
       return
 
     ###
