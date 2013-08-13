@@ -208,10 +208,12 @@ Copyright 2012, James Yu, Joscha Feth
       (@observers[type] ?= []).push cb
 
     notify: (type, args...) ->
+      # trigger specific event
       if @observers[type]
         for listener in @observers[type]
           listener?.apply? @, args
-      if type isnt @EVENT_ANY
+      # trigger those listening on any event
+      if type isnt @EVENT_ANY and @observers[@EVENT_ANY]
         for listener in @observers[@EVENT_ANY]
           listener?.call? @, type, args
       return
