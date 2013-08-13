@@ -59,7 +59,7 @@ Copyright 2012, James Yu, Joscha Feth
             try
               dbg "DEBUG error in GG_iframeFn: ", e
           d
-  
+
   # Utility methods
   dbg = (args...) ->
     args.unshift '[Gmailr]'
@@ -70,7 +70,7 @@ Copyright 2012, James Yu, Joscha Feth
     t.parents().index(el) >= 0
 
   class Gmailr
-    
+
     debug:                false
     priorityInboxLink:    null
     inboxLink:            null
@@ -108,7 +108,7 @@ Copyright 2012, James Yu, Joscha Feth
 
     VIEW_CONVERSATION:  'conversation'
     VIEW_THREADED:      'threaded'
-    
+
     #
     #            This is the main initialization routine. It bootstraps Gmailr into the Gmail interface.
     #            You must call this with a callback, like so:
@@ -116,7 +116,7 @@ Copyright 2012, James Yu, Joscha Feth
     #            Gmailr.init(funciton(G) {
     #                // .. G is the Gmailr API object
     #            });
-    #        
+    #
     init: (cb) ->
       if @loaded
         dbg "Gmailr has already been initialized"
@@ -179,10 +179,10 @@ Copyright 2012, James Yu, Joscha Feth
     intercept: ->
       throw "Call to method before Gmail has loaded" unless @loaded
       return
-    
+
     #
     #            Inserts the element to the top of the Gmail interface.
-    #        
+    #
     insertTop: (el, ignoreDOMEvents = true) ->
       @intercept()
       el = $ el
@@ -190,17 +190,17 @@ Copyright 2012, James Yu, Joscha Feth
       @ignoreDOMElements.push el.get(0) if ignoreDOMEvents
       return
 
-    
+
     #
     #            Allows you to apply jQuery selectors in the Gmail DOM, like so:
     #
     #            G.$('.my_class');
-    #        
+    #
     $: (selector) ->
       @intercept()
       @elements.body.find selector
 
-    
+
     ###
     Subscribe to a specific event in Gmail
     ###
@@ -216,37 +216,37 @@ Copyright 2012, James Yu, Joscha Feth
           listener?.call? @, type, args
       return
 
-    
+
     ###
     Number of unread messages.
     ###
     numUnread: ->
       @intercept()
-      
+
       # We always look to the inbox link, bc it always displays the number unread
       # no matter where you are in Gmail
-      
+
       #var title = this.inboxLink[0].title;
       title = @getInboxLink().attr 'title'
       m = /\((\d+)\)/.exec title
       if m?[1] then parseInt m[1] else 0
 
-    
+
     ###
     Email address of the Gmail account.
     ###
     emailAddress: ->
       @intercept()
-      
+
       selectors = [
         "#guser b" # First, try old Gmail header
         ".gbmp1" # Try the new one
         '.gbps2'
-      ] 
+      ]
       el = @elements.canvas.find selectors.join ','
       el.first().html()
 
-    
+
     ###
     Returns whether the current view is a threaded or conversation view.
     ###
@@ -259,7 +259,7 @@ Copyright 2012, James Yu, Joscha Feth
               "a[href$='#inbox'][title^='Inbox']"       # English
               "a[href$='#inbox'][title^='Posteingang']" # German
               "a[href$='#inbox'][title^='Postvak IN']"  # Dutch
-              
+
               "a[href$='#inbox'][target='_top']"  # Generic fallback
               ]
 
@@ -286,10 +286,10 @@ Copyright 2012, James Yu, Joscha Feth
       else
         null
 
-    
+
     # Return true if a yellow archive highlight actually means the user is archiving
     archiveableState: ->
-      
+
       # For threads, this overrestricts:
       #   TODO: should detect if user is archiving an inbox item from a non-inbox view
       # For conversations, this underrestricts:
@@ -327,6 +327,7 @@ Copyright 2012, James Yu, Joscha Feth
       isHTML:     postParams.ishtml is '1'
       cc:         @toEmailArray postParams.cc
       fromDraft:  (if postParams.draft is "undefined" then null else postParams.draft)
+      _raw: postParams
 
     # Adapted from http://notepad2.blogspot.com/2012/02/javascript-parse-string-of-email.html
     toEmailArray: (str) ->
@@ -347,7 +348,7 @@ Copyright 2012, James Yu, Joscha Feth
           if postParams and postParams.t and !(postParams.t instanceof Array)
             postParams.t = [postParams.t]
             count = postParams.t.length
-          
+
           # The user has cleared more than a pageful, so we don't know the exact count
           count = -1  if postParams["ba"]
 
@@ -355,7 +356,7 @@ Copyright 2012, James Yu, Joscha Feth
 
           # View thread
           when "ad"
-            
+
             unless urlParams.th
               @notify @EVENT_REFRESH_INBOX
             else
@@ -445,7 +446,7 @@ Copyright 2012, James Yu, Joscha Feth
           # the target from where the change came is a descendant of an ignored element
           # dbg "...but the event came from a descendant of an ignored element"
           return false
-      
+
       el = $ e.target
 
       # Left Menu Changes
@@ -460,7 +461,7 @@ Copyright 2012, James Yu, Joscha Feth
           dbg "Unread count changed"
           @notify @EVENT_UNREAD_CHANGE, newCount, @currentNumUnread
           @currentNumUnread = newCount
-         
+
       if @elements.canvas.find(".ha").length > 0
         unless @inConversationView
           @inConversationView = true
@@ -469,7 +470,7 @@ Copyright 2012, James Yu, Joscha Feth
         if @inConversationView
           @inConversationView = false
           @notify @EVENT_VIEW_CHANGED, @VIEW_THREADED
-      
+
       # Inbox count change
       if isDescendant @toolbarEl(), el
         toolbarCount = @toolbarCount()
