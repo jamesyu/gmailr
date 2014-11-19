@@ -8,7 +8,7 @@
         "*://mail.google.com/*"
       ],
       "js": [
-        "lib/yepnope.js/yepnope.1.5.4-min.js",
+        "bower_components/yepnope/dist/yepnope-2.0.0.min.js",
         "bootstrap.js"
       ],
       "css": [
@@ -28,5 +28,3 @@
     "main.js"
   ]
 }
-
-        

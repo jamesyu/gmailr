@@ -1,0 +1,27 @@
+{
+  "name": "gmailr-chrome-extension-sample",
+  "version": "0.0.1",
+  "homepage": "https://github.com/joscha/gmailr",
+  "authors": [
+    "Joscha Feth <joscha@feth.com>"
+  ],
+  "description": "An extension to test the features of Gmailr.",
+  "keywords": [
+    "gmail",
+    "extension",
+    "gmailr",
+    "sample"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "yepnope": "2.0.0"
+  }
+}
