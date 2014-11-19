@@ -28,6 +28,7 @@
     "chrome"
   ],
   "dependencies": {
-    "jquery-deparam": "https://gist.github.com/1025817.git"
+    "jquery-deparam": "https://gist.github.com/1025817.git",
+    "jquery": "1.9.1"
   }
 }
