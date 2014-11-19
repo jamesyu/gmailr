@@ -1,9 +1,3 @@
-###
-Gmailr v0.0.1
-Licensed under The MIT License
-
-Copyright 2012, James Yu, Joscha Feth
-###
 (($, window) ->
 
   class XHRWatcher
