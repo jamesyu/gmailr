@@ -1,0 +1,33 @@
+{
+  "name": "gmailr",
+  "version": "0.0.2",
+  "homepage": "https://github.com/joscha/gmailr",
+  "authors": [
+    "Joscha Feth <joscha@feth.com>",
+    "James Yu"
+  ],
+  "description": "A Gmail Javascript API",
+  "main": "build/gmailr.min.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "gmail",
+    "api",
+    "javascript",
+    "google",
+    "mail"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "chrome"
+  ],
+  "dependencies": {
+    "jquery-deparam": "https://gist.github.com/1025817.git"
+  }
+}
