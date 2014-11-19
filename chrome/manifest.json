@@ -9,7 +9,7 @@
       ],
       "js": [
         "lib/yepnope.js/yepnope.1.5.4-min.js",
-        "lib/bootstrap.js"
+        "bootstrap.js"
       ],
       "css": [
         "main.css"
