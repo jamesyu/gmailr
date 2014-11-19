@@ -25,7 +25,10 @@
     "bower_components",
     "test",
     "tests",
-    "chrome"
+    "chrome",
+    "src",
+    "Gruntfile.js",
+    "*.md"
   ],
   "dependencies": {
     "jquery-deparam": "https://gist.github.com/1025817.git",
