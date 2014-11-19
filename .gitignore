@@ -1,3 +1,5 @@
 .DS_Store
 chrome/lib/bootstrap.js
 chrome/lib/gmailr.js
+bower_components
+node_modules
