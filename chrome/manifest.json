@@ -8,7 +8,7 @@
         "*://mail.google.com/*"
       ],
       "js": [
-        "bower_components/yepnope/dist/yepnope-2.0.0.min.js",
+        "bower_components/yepnope/yepnope.1.5.4-min.js",
         "bootstrap.js"
       ],
       "css": [
@@ -23,8 +23,10 @@
   ],
   "manifest_version" : 2,
   "web_accessible_resources" : [
-    "lib/gmailr.js",
-    "lib/jquery-bbq/jquery.ba-bbq.min.js",
+    "bower_components/*.js.map",
+    "bower_components/jquery/jquery.min.js",
+    "bower_components/gmailr/build/gmailr.min.js",
+    "bower_components/jquery-deparam/jquery.ba-deparam.min.js",
     "main.js"
   ]
 }

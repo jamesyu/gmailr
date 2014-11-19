@@ -1,14 +1,14 @@
 (function(window, jQuery) {
   'use strict';
-  
+
   if (window.top.document === window.document) {
     yepnope({
       test: typeof jQuery === "undefined" || jQuery === null,
-      yep: 'https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js'
+      yep: chrome.extension.getURL("bower_components/jquery/jquery.min.js")
     });
     yepnope([
-      chrome.extension.getURL("lib/jquery-bbq/jquery.ba-bbq.min.js"),
-      chrome.extension.getURL("lib/gmailr.js"),
+      chrome.extension.getURL("bower_components/jquery-deparam/jquery.ba-deparam.min.js"),
+      chrome.extension.getURL("bower_components/gmailr/build/gmailr.min.js"),
       chrome.extension.getURL("main.js")
     ]);
   }
