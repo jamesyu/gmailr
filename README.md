@@ -1,4 +1,4 @@
-Gmailr: A Gmail Javascript API
+[![Build Status](https://travis-ci.org/joscha/gmailr.svg)](https://travis-ci.org/joscha/gmailr) Gmailr: A Gmail Javascript API
 ==============================
 
 Gmailr is a javascript library that lets you interact and get data from the Gmail interface. It is meant to be injected into the Gmail DOM directly, usually through a browser plugin.
