@@ -5,7 +5,8 @@
   "main": "build/gmailr.js",
   "scripts": {
     "postinstall": "bower install",
-    "test": "grunt travis"
+    "test": "grunt travis",
+    "quickstart": "bower install && cd chrome && bower install"
   },
   "repository": {
     "type": "git",
