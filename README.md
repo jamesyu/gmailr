@@ -13,8 +13,7 @@ The library is packaged here as a Chrome extension that presents some status inf
 To install the extension, clone the repo and:
 
 
-- Get an install CoffeeScript for your system
-- Run cake build in the root directory to generate JavaScript files from the CoffeeScript source
+- Run an `npm install`, then an `npm install bower -g` and then an `npm run quickstart`.
 - Open Chrome and go to chrome://extensions
 - If the Developer Mode toggle is set to "-", click it to go into Developer Mode.
 - Click "Load unpacked extension..."
@@ -125,12 +124,3 @@ The email address of the current Gmail user.
     G.currentView()
     
 Returns whether the current view is a threaded or conversation view.
-
-
-TODOs
-=====
-
-There are much more TODOs than I have time for :) 
-
-* More stability and accuracy for various events.
-* Ability to add DOM elements in various places in Gmail, like the sidebar, etc.
