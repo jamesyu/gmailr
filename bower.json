@@ -32,6 +32,6 @@
   ],
   "dependencies": {
     "jquery-deparam": "https://gist.github.com/1025817.git",
-    "jquery": "1.11.1"
+    "jquery": "~1.11.1"
   }
 }
