@@ -2,7 +2,10 @@
   "name": "gmailr",
   "version": "0.0.2",
   "description": "A Gmail Javascript API",
-  "main": "build/gmailr.js",
+  "main": "build/gmailr.min.js",
+  "scripts": {
+    "test": "grunt travis"
+  },
   "scripts": {
     "postinstall": "bower install",
     "test": "grunt travis",
