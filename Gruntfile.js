@@ -29,8 +29,17 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-coffee');
+  grunt.loadNpmTasks('grunt-bump');
 
-  grunt.registerTask('default', ['coffee:compile', 'uglify']);
-  grunt.registerTask('travis', ['coffee:compile']);
+  grunt.registerTask('build', ['coffee:compile', 'uglify']);
+  grunt.registerTask('default', 'build');
+  grunt.registerTask('travis', 'build');
 
+  grunt.registerTask('release', 'Bump, build and release.', function(type) {
+    grunt.task.run([
+      'bump-only:' + (type || 'patch'),
+      'build',
+      'bump-commit'
+      ]);
+  });
 };
