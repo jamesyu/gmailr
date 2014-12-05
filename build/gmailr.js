@@ -324,7 +324,7 @@
       Gmailr.prototype.emailAddress = function() {
         var el, selectors;
         this.intercept();
-        selectors = ["#guser b", ".gbmp1", '.gbps2'];
+        selectors = ["#guser b", ".gbmp1", '.gbps2', '.gb_qa'];
         el = this.elements.canvas.find(selectors.join(','));
         return el.first().html();
       };
