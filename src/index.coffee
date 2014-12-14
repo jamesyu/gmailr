@@ -242,7 +242,7 @@
         '.gb_qa'
       ]
       el = @elements.canvas.find selectors.join ','
-      el.first().html()
+      el.first().text()
 
 
     ###
