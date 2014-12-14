@@ -326,7 +326,7 @@
         this.intercept();
         selectors = ['a[href*="profiles.google.com"]', "#guser b", ".gbmp1", '.gbps2', '.gb_qa'];
         el = this.elements.canvas.find(selectors.join(','));
-        return el.first().html();
+        return el.first().text();
       };
 
 
