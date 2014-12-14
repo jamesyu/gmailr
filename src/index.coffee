@@ -235,7 +235,8 @@
       @intercept()
 
       selectors = [
-        "#guser b" # First, try old Gmail header
+        'a[href*="profiles.google.com"]' # Google profiles header
+        "#guser b" # old Gmail header
         ".gbmp1" # Try the new one
         '.gbps2'
         '.gb_qa'
