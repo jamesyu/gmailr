@@ -1,6 +1,6 @@
 {
   "name": "gmailr",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "A Gmail Javascript API",
   "main": "build/gmailr.min.js",
   "scripts": {

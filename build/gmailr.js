@@ -322,11 +322,12 @@
        */
 
       Gmailr.prototype.emailAddress = function() {
-        var el, selectors;
+        var selectors;
         this.intercept();
-        selectors = ['a[href*="profiles.google.com"]', "#guser b", ".gbmp1", '.gbps2', '.gb_qa'];
-        el = this.elements.canvas.find(selectors.join(','));
-        return el.first().text();
+        selectors = ['a[href*="profiles.google.com"]', "#guser b", ".gbmp1", '.gbps2', '.gb_sa', '.gb_qa'];
+        return this.elements.canvas.find(selectors.join(',')).filter(function() {
+          return $(this).text().indexOf('@' !== -1);
+        }).first().text();
       };
 
 
