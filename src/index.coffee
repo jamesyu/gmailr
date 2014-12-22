@@ -235,14 +235,18 @@
       @intercept()
 
       selectors = [
-        'a[href*="profiles.google.com"]' # Google profiles header
+        'a[href*="profiles.google.com"]' # Google profiles header (No G+)
         "#guser b" # old Gmail header
         ".gbmp1" # Try the new one
         '.gbps2'
-        '.gb_qa'
+        '.gb_sa' # Account information
+        '.gb_qa' # Photo text (G+)
       ]
-      el = @elements.canvas.find selectors.join ','
-      el.first().text()
+      @elements.canvas
+        .find(selectors.join ',')
+        .filter(-> $(@).text().indexOf '@' isnt -1)
+        .first()
+        .text()
 
 
     ###
