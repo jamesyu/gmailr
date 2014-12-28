@@ -120,7 +120,7 @@
       dbg "Initializing Gmailr API"
       # Here we do delayed loading until success. This is in the case
       # that our script loads after Gmail has already loaded.
-      load = =>
+      @delayedLoader = setInterval (=>
         @elements.canvas = $ if (canvas_frame = $("#canvas_frame").get 0) then canvas_frame.contentDocument else document
         #dbg @elements.canvas
         @elements.body = @elements.canvas.find(".nH").first()
@@ -128,15 +128,21 @@
         if @loaded
           clearInterval @delayedLoader
           dbg "Delayed loader success."
-          @elements.body.children().on 'DOMSubtreeModified', @detectDOMEvents
+          observer = new MutationObserver @detectDOMEvents
+          observer.observe @elements.body.get(0),
+            attributes: false
+            childList: true
+            characterData: false
+            subtree: true
+
           @notify @EVENT_LOADED
         else
           dbg "Calling delayed loader..."
           # we search from the body node, since there's no event to attach to
           @bootstrap cb
         return
+        ), 200
 
-      @delayedLoader = setInterval load, 200
       return
 
     ###
@@ -437,49 +443,47 @@
 
       return
 
-    detectDOMEvents: (e) =>
-      # don't bubble
-      e.stopPropagation()
+    detectDOMEvents: (records, observer) =>
+      for e in records
+        # dbg "DOM changed", e.target
+        for ignored in @ignoreDOMElements
+          # check all the ignored DOM elements
+          if $.contains ignored, e.target
+            # the target from where the change came is a descendant of an ignored element
+            # dbg "...but the event came from a descendant of an ignored element"
+            return false
 
-      # dbg "DOM changed", e.target
-      for ignored in @ignoreDOMElements
-        # check all the ignored DOM elements
-        if $.contains ignored, e.target
-          # the target from where the change came is a descendant of an ignored element
-          # dbg "...but the event came from a descendant of an ignored element"
-          return false
+        el = $ e.target
 
-      el = $ e.target
+        # Left Menu Changes
+        #var s = this.liveLeftMenuItem();
+        #            if(this.currentLeftMenuItem != s) {
+        #                this.currentLeftMenuItem = s;
+        #                this.notify('tabChange', s);
+        #            }
 
-      # Left Menu Changes
-      #var s = this.liveLeftMenuItem();
-      #            if(this.currentLeftMenuItem != s) {
-      #                this.currentLeftMenuItem = s;
-      #                this.notify('tabChange', s);
-      #            }
+        newCount = @numUnread()
+        if @currentNumUnread isnt newCount
+            dbg "Unread count changed"
+            @notify @EVENT_UNREAD_CHANGE, newCount, @currentNumUnread
+            @currentNumUnread = newCount
 
-      newCount = @numUnread()
-      if @currentNumUnread isnt newCount
-          dbg "Unread count changed"
-          @notify @EVENT_UNREAD_CHANGE, newCount, @currentNumUnread
-          @currentNumUnread = newCount
+        if @elements.canvas.find(".ha").length > 0
+          unless @inConversationView
+            @inConversationView = true
+            @notify @EVENT_VIEW_CHANGED, @VIEW_CONVERSATION
+        else
+          if @inConversationView
+            @inConversationView = false
+            @notify @EVENT_VIEW_CHANGED, @VIEW_THREADED
 
-      if @elements.canvas.find(".ha").length > 0
-        unless @inConversationView
-          @inConversationView = true
-          @notify @EVENT_VIEW_CHANGED, @VIEW_CONVERSATION
-      else
-        if @inConversationView
-          @inConversationView = false
-          @notify @EVENT_VIEW_CHANGED, @VIEW_THREADED
-
-      # Inbox count change
-      if isDescendant @toolbarEl(), el
-        toolbarCount = @toolbarCount()
-        if @inboxTabHighlighted() and toolbarCount
-          if (@currentInboxCount is null) or (toolbarCount isnt @currentInboxCount)
-            @notify @EVENT_INBOX_COUNT_CHANGE, toolbarCount, @currentInboxCount  if @currentInboxCount isnt null
-            @currentInboxCount = toolbarCount
+        # Inbox count change
+        if isDescendant @toolbarEl(), el
+          toolbarCount = @toolbarCount()
+          if @inboxTabHighlighted() and toolbarCount
+            if (@currentInboxCount is null) or (toolbarCount isnt @currentInboxCount)
+              @notify @EVENT_INBOX_COUNT_CHANGE, toolbarCount, @currentInboxCount  if @currentInboxCount isnt null
+              @currentInboxCount = toolbarCount
 
   Gmailr = new Gmailr
 

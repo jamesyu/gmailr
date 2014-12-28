@@ -24,8 +24,10 @@
   "manifest_version" : 2,
   "web_accessible_resources" : [
     "bower_components/*.js.map",
-    "bower_components/jquery/jquery.min.js",
+    "bower_components/jquery/dist/jquery.min.js",
+    "bower_components/jquery/dist/jquery.min.map",
     "bower_components/gmailr/build/gmailr.min.js",
+    "bower_components/gmailr/build/gmailr.min.js.map",
     "bower_components/jquery-deparam/jquery.ba-deparam.min.js",
     "main.js"
   ]
