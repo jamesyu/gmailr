@@ -168,7 +168,6 @@
       Gmailr.prototype.VIEW_THREADED = 'threaded';
 
       Gmailr.prototype.init = function(cb) {
-        var load;
         if (this.loaded) {
           dbg("Gmailr has already been initialized");
           if (typeof cb === "function") {
@@ -177,23 +176,28 @@
           return;
         }
         dbg("Initializing Gmailr API");
-        load = (function(_this) {
+        this.delayedLoader = setInterval(((function(_this) {
           return function() {
-            var canvas_frame;
+            var canvas_frame, observer;
             _this.elements.canvas = $((canvas_frame = $("#canvas_frame").get(0)) ? canvas_frame.contentDocument : document);
             _this.elements.body = _this.elements.canvas.find(".nH").first();
             if (_this.loaded) {
               clearInterval(_this.delayedLoader);
               dbg("Delayed loader success.");
-              _this.elements.body.children().on('DOMSubtreeModified', _this.detectDOMEvents);
+              observer = new MutationObserver(_this.detectDOMEvents);
+              observer.observe(_this.elements.body.get(0), {
+                attributes: false,
+                childList: true,
+                characterData: false,
+                subtree: true
+              });
               _this.notify(_this.EVENT_LOADED);
             } else {
               dbg("Calling delayed loader...");
               _this.bootstrap(cb);
             }
           };
-        })(this);
-        this.delayedLoader = setInterval(load, 200);
+        })(this)), 200);
       };
 
 
@@ -540,42 +544,44 @@
         }
       };
 
-      Gmailr.prototype.detectDOMEvents = function(e) {
-        var el, ignored, newCount, toolbarCount, _i, _len, _ref;
-        e.stopPropagation();
-        _ref = this.ignoreDOMElements;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          ignored = _ref[_i];
-          if ($.contains(ignored, e.target)) {
-            return false;
+      Gmailr.prototype.detectDOMEvents = function(records, observer) {
+        var e, el, ignored, newCount, toolbarCount, _i, _j, _len, _len1, _ref;
+        for (_i = 0, _len = records.length; _i < _len; _i++) {
+          e = records[_i];
+          _ref = this.ignoreDOMElements;
+          for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+            ignored = _ref[_j];
+            if ($.contains(ignored, e.target)) {
+              return false;
+            }
           }
-        }
-        el = $(e.target);
-        newCount = this.numUnread();
-        if (this.currentNumUnread !== newCount) {
-          dbg("Unread count changed");
-          this.notify(this.EVENT_UNREAD_CHANGE, newCount, this.currentNumUnread);
-          this.currentNumUnread = newCount;
-        }
-        if (this.elements.canvas.find(".ha").length > 0) {
-          if (!this.inConversationView) {
-            this.inConversationView = true;
-            this.notify(this.EVENT_VIEW_CHANGED, this.VIEW_CONVERSATION);
+          el = $(e.target);
+          newCount = this.numUnread();
+          if (this.currentNumUnread !== newCount) {
+            dbg("Unread count changed");
+            this.notify(this.EVENT_UNREAD_CHANGE, newCount, this.currentNumUnread);
+            this.currentNumUnread = newCount;
           }
-        } else {
-          if (this.inConversationView) {
-            this.inConversationView = false;
-            this.notify(this.EVENT_VIEW_CHANGED, this.VIEW_THREADED);
+          if (this.elements.canvas.find(".ha").length > 0) {
+            if (!this.inConversationView) {
+              this.inConversationView = true;
+              this.notify(this.EVENT_VIEW_CHANGED, this.VIEW_CONVERSATION);
+            }
+          } else {
+            if (this.inConversationView) {
+              this.inConversationView = false;
+              this.notify(this.EVENT_VIEW_CHANGED, this.VIEW_THREADED);
+            }
           }
-        }
-        if (isDescendant(this.toolbarEl(), el)) {
-          toolbarCount = this.toolbarCount();
-          if (this.inboxTabHighlighted() && toolbarCount) {
-            if ((this.currentInboxCount === null) || (toolbarCount !== this.currentInboxCount)) {
-              if (this.currentInboxCount !== null) {
-                this.notify(this.EVENT_INBOX_COUNT_CHANGE, toolbarCount, this.currentInboxCount);
+          if (isDescendant(this.toolbarEl(), el)) {
+            toolbarCount = this.toolbarCount();
+            if (this.inboxTabHighlighted() && toolbarCount) {
+              if ((this.currentInboxCount === null) || (toolbarCount !== this.currentInboxCount)) {
+                if (this.currentInboxCount !== null) {
+                  this.notify(this.EVENT_INBOX_COUNT_CHANGE, toolbarCount, this.currentInboxCount);
+                }
+                this.currentInboxCount = toolbarCount;
               }
-              return this.currentInboxCount = toolbarCount;
             }
           }
         }
